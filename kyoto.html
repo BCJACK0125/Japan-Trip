@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>關西之旅小助手 2026</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2F4F4F;
+            --primary-light: #4A6D6D; 
+            --accent: #FF6B6B;
+            --bg: #F5F5F5;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-sub: #666666;
+            --line: #E0E0E0;
+            --tag-eat: #FFF0F0; --text-eat: #D32F2F;
+            --tag-buy: #F3E5F5; --text-buy: #7B1FA2;
+            --tag-book: #E3F2FD; --text-book: #1976D2;
+            --tag-must: #FFF3E0; --text-must: #E65100;
+            --type-spot: #00897B; --type-food: #FF9800; --type-transport: #78909C; --type-shop: #8E24AA;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding-bottom: 80px;
+            background-image: radial-gradient(#E0E0E0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* --- 頂部導航 --- */
+        .sticky-header { position: sticky; top: 0; z-index: 1000; background-color: var(--primary); }
+        header { padding: 15px 16px 10px 16px; color: white; }
+        header h1 { font-size: 18px; margin: 0; letter-spacing: 1px; }
+
+        .day-selector {
+            display: flex; overflow-x: auto; background: var(--primary-light);
+            padding: 0 8px; gap: 8px; scrollbar-width: none;
+        }
+        .day-selector::-webkit-scrollbar { display: none; }
+        .day-tab {
+            flex: 0 0 auto; padding: 10px 15px; color: rgba(255,255,255,0.7);
+            font-size: 13px; font-weight: 600; text-align: center; border-bottom: 3px solid transparent;
+        }
+        .day-tab.active { color: white; border-bottom: 3px solid var(--accent); background: rgba(255,255,255,0.1); }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+
+        /* --- 行程卡片 --- */
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        .day-summary {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px; background: white; padding: 12px;
+            border-radius: 10px; border-left: 5px solid var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .item-card { background: var(--card-bg); border-radius: 12px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); overflow: hidden; }
+        .card-top-strip { height: 6px; width: 100%; }
+        .strip-spot { background: var(--type-spot); }
+        .strip-food { background: var(--type-food); }
+        .strip-transport { background: var(--type-transport); }
+        .strip-shop { background: var(--type-shop); }
+        .strip-hotel { background: #333; }
+
+        .card-body { padding: 16px; }
+        .card-meta { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: var(--text-sub); font-weight: 600; }
+        .card-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+        .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+        .tag { font-size: 11px; padding: 3px 7px; border-radius: 4px; font-weight: 600; }
+        .tag-eat { background: var(--tag-eat); color: var(--text-eat); }
+        .tag-buy { background: var(--tag-buy); color: var(--text-buy); }
+        .tag-book { background: var(--tag-book); color: var(--text-book); }
+        .tag-must { background: var(--tag-must); color: var(--text-must); }
+        
+        .card-info { font-size: 14px; color: var(--text-main); line-height: 1.5; margin-bottom: 12px; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--bg); padding-top: 12px; }
+        .btn-nav { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; text-decoration: none; }
+        
+        .story-box { background: #fdfdfd; padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 13px; border-left: 3px solid var(--accent); display: none; color: #555; line-height: 1.6; }
+        .story-toggle { color: var(--primary); font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 8px; display: inline-block; text-decoration: underline; }
+
+        /* --- 工具箱卡片 --- */
+        .tool-card { background: white; padding: 16px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+        .info-row:last-child { border-bottom: none; }
+
+        /* --- 底部導航 --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid var(--line); display: flex; height: 65px; z-index: 2000; padding-bottom: env(safe-area-inset-bottom); }
+        .nav-item { flex: 1; text-align: center; font-size: 11px; padding: 10px 0; color: var(--text-sub); }
+        .nav-item.active { color: var(--primary); font-weight: 700; }
+        .nav-icon { font-size: 22px; display: block; margin-bottom: 2px; }
+    </style>
+</head>
+<body>
+
+    <div class="sticky-header" id="main-header">
+        <header>
+            <h1>🌸 2026 京阪之旅</h1>
+        </header>
+        <div class="day-selector" id="day-tabs"></div>
+    </div>
+
+    <div id="itinerary-view" class="view-section active container">
+        <div id="day-content"></div>
+    </div>
+
+    <div id="tools-view" class="view-section container">
+        <div class="tool-card">
+            <h3 style="color:var(--primary); margin:0 0 12px 0; font-size:16px;">✈️ 航班詳細資訊 (AirAsia X)</h3>
+            <div class="info-row"><span>去程 D7378</span><span>15:40 TPE → 19:20 KIX</span></div>
+            <div class="info-row"><span>回程 D7379</span><span>20:45 KIX → 22:45 TPE</span></div>
+            <div style="font-size:12px; color:var(--text-sub); margin-top:8px; line-height:1.4;">
+                * 抵達關西機場第一航廈 (T1)<br>
+                * 回程櫃檯：T1 航廈 H 區 (預計)
+            </div>
+        </div>
+
+        <div class="tool-card">
+            <h3 style="color:var(--primary); margin:0 0 12px 0; font-size:16px;">🏨 住宿詳細資訊</h3>
+            <div style="margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
+                <div style="font-weight:700; color:var(--primary);">京都：Check In 四條烏丸</div>
+                <div style="font-size:13px; margin:4px 0;">📍 京都市中京區烏丸通錦小路上ル手洗水町 652</div>
+                <div style="font-size:12px; color:var(--accent);">地下鐵「四條站」21號出口步行 2 分</div>
+            </div>
+            <div>
+                <div style="font-weight:700; color:var(--primary);">大阪：Hotel Hillarys 心齋橋</div>
+                <div style="font-size:13px; margin:4px 0;">📍 大阪市中央區東心齋橋 1-17-11</div>
+                <div style="font-size:12px; color:var(--accent);">「心齋橋站」6 號出口，附設頂樓大浴場</div>
+            </div>
+        </div>
+
+        <div class="tool-card">
+            <h3 style="color:var(--primary); margin:0 0 12px 0; font-size:16px; display:flex; justify-content:space-between;">
+                💰 預算與記帳 <span id="total-display" style="color:var(--accent);">NT$ 0</span>
+            </h3>
+            <div style="display:flex; flex-direction:column; gap:10px; background:#f9f9f9; padding:12px; border-radius:8px;">
+                <input type="text" id="exp-name" placeholder="項目內容" style="padding:12px; border:1px solid #ddd; border-radius:6px; font-size:16px;">
+                <div style="display:flex; gap:8px;">
+                    <input type="number" id="exp-amt" placeholder="金額" style="flex:2; padding:12px; border:1px solid #ddd; border-radius:6px; font-size:16px;">
+                    <select id="exp-unit" style="flex:1.2; padding:12px; border:1px solid #ddd; border-radius:6px; background:white;">
+                        <option value="JPY">日圓 (¥)</option>
+                        <option value="TWD">台幣 ($)</option>
+                    </select>
+                    <button onclick="addExp()" style="flex:1; background:var(--primary); color:white; border:none; border-radius:6px; font-weight:bold; font-size:20px;">+</button>
+                </div>
+            </div>
+            <div id="expense-list" style="margin-top:15px;"></div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="showMainTab('itinerary')">
+            <span class="nav-icon">🗓️</span>行程
+        </div>
+        <div class="nav-item" onclick="showMainTab('tools')">
+            <span class="nav-icon">🧰</span>工具箱
+        </div>
+    </nav>
+
+    <script>
+        const itinerary = [
+            { date: "4/16", weekday: "三", dayNum: "Day 1", weather: "☁️ 18°C", items: [
+                { time: "19:20", type: "transport", title: "抵達關西機場 (KIX)", detail: "第一航廈落地。提前填妥 Visit Japan Web 掃碼入境。", cost: "", address: "Kansai International Airport", tags: [] },
+                { time: "20:44", type: "transport", title: "JR Haruka 特急", detail: "4 號月台發車，直達京都車站。Klook 買票綠色機台兌換。", cost: "¥2,420", address: "Kansai Airport Station", tags: ["預約"] },
+                { time: "22:30", type: "hotel", title: "京都飯店辦理入住", detail: "CheckIn Hotel 四條烏丸。1F 有 Lawson。", cost: "", address: "CheckIn Hotel Shijo Karasuma", tags: [] }
+            ]},
+            { date: "4/17", weekday: "四", dayNum: "Day 2", weather: "🌤️ 20°C", items: [
+                { time: "07:30", type: "spot", title: "伏見稻荷大社", detail: "避開人潮，獨享千本鳥居。建議拍完空景後前往清水寺。", cost: "免費", address: "Fushimi Inari Taisha", tags: ["必看"], story: "這裡是全日本稻荷神社總本宮，千本鳥居由信徒捐贈，建議清晨抵達可拍到夢幻空景。" },
+                { time: "10:00", type: "spot", title: "清水寺", detail: "巡遊清水舞台與音羽之瀧。二年坂散策。", cost: "¥500", address: "Kiyomizu-dera", tags: ["必看"] },
+                { time: "14:00", type: "food", title: "錦市場", detail: "京都人的廚房。推薦豆乳甜甜圈。", cost: "¥2,000", address: "Nishiki Market", tags: ["必吃"] },
+                { time: "19:30", type: "food", title: "滿天串燒 (先斗町)", detail: "鴨川旁極具氣氛。必點雞肉丸、雞皮串。", cost: "¥4,000", address: "Manten Pontocho", tags: ["必點", "預約"] }
+            ]},
+            { date: "4/18", weekday: "五", dayNum: "Day 3", weather: "☁️ 19°C", items: [
+                { time: "09:02", type: "spot", title: "嵐山小火車 (龜岡站)", detail: "看保津川峽谷風景。官網提前訂票，推雙數座。", cost: "¥880", address: "Kameoka Station", tags: ["預約"], story: "賞楓/櫻名所。如果是週末，請務必在一個月前開搶票券。" },
+                { time: "11:30", type: "spot", title: "嵐山竹林小徑", detail: "經典電影場景，感受翠綠竹林。鄰近御髮神社。", cost: "免費", address: "Arashiyama Bamboo Grove", tags: ["必看"] },
+                { time: "13:00", type: "food", title: "嵐山商業街/Miffy", detail: "吃限定紅豆麵包，買伴手禮。", cost: "¥2,000", address: "Miffy Sakura Bakery", tags: ["必買"] }
+            ]},
+            { date: "4/19", weekday: "六", dayNum: "Day 4", weather: "☀️ 21°C", items: [
+                { time: "08:30", type: "spot", title: "宇治 平等院", detail: "千年鳳凰堂，映照池水美景。", cost: "¥700", address: "Byodoin", tags: ["必看"] },
+                { time: "11:30", type: "food", title: "中村藤吉 本店", detail: "抹茶控必朝聖。必點竹筒抹茶冰淇淋。", cost: "¥3,000", address: "Nakamura Tokichi", tags: ["必吃"] },
+                { time: "14:30", type: "spot", title: "奈良公園", detail: "買鹿仙貝與鹿互動。小心鹿群包圍！", cost: "¥200", address: "Nara Park", tags: ["必吃"] },
+                { time: "20:00", type: "hotel", title: "大阪飯店 Check-in", detail: "Hotel Hillarys 心齋橋。去頂樓泡大浴場。", cost: "", address: "Hotel Hillarys Shinsaibashi", tags: [] }
+            ]},
+            { date: "4/20", weekday: "日", dayNum: "Day 5", weather: "🌤️ 22°C", items: [
+                { time: "10:45", type: "spot", title: "勝尾寺", detail: "滿山滿谷不倒翁，求勝運名所。", cost: "¥500", address: "Katsuo-ji", tags: ["必看", "必買"] },
+                { time: "14:00", type: "spot", title: "箕面大瀑布", detail: "森林浴散步。必吃炸楓葉。", cost: "免費", address: "Minoh Waterfall", tags: ["必吃"] },
+                { time: "18:00", type: "shop", title: "心齋橋/道頓堀", detail: "藥妝採買、固力果霓虹燈拍照。", cost: "", address: "Dotonbori", tags: ["必看"] }
+            ]},
+            { date: "4/21", weekday: "一", dayNum: "Day 6", weather: "☀️ 23°C", items: [
+                { time: "09:00", type: "spot", title: "大阪城天守閣", detail: "大阪地標，宏偉壯觀。", cost: "¥600", address: "Osaka Castle", tags: ["必看"] },
+                { time: "12:00", type: "food", title: "黑門市場", detail: "高品質海鮮、神戶牛現煎。", cost: "¥4,000", address: "Kuromon Market", tags: ["必吃"] },
+                { time: "18:00", type: "spot", title: "梅田空中庭園", detail: "露天展望台看大阪夜景。", cost: "¥1,500", address: "Umeda Sky Building", tags: ["必看"] }
+            ]},
+            { date: "4/22", weekday: "二", dayNum: "Day 7", weather: "☁️ 20°C", items: [
+                { time: "10:00", type: "shop", title: "心齋橋最後購物", detail: "Parco/大丸百貨補貨。", cost: "", address: "Shinsaibashi Parco", tags: ["必吃"] },
+                { time: "15:00", type: "shop", title: "臨空城 Outlet", detail: "回機前最後大採買，運動品牌極優惠。", cost: "", address: "Rinku Outlet", tags: ["必買"] },
+                { time: "20:55", type: "transport", title: "回程航班起飛", detail: "關西機場 D7379 往台北。", cost: "", address: "Kansai International Airport", tags: [] }
+            ]}
+        ];
+
+        let expenses = [];
+        const JPY_TO_TWD = 0.22;
+
+        function init() {
+            const tabContainer = document.getElementById('day-tabs');
+            tabContainer.innerHTML = itinerary.map((day, i) => `
+                <div class="day-tab ${i === 0 ? 'active' : ''}" onclick="switchDay(${i})">
+                    ${day.date}<br>${day.dayNum}
+                </div>
+            `).join('');
+            renderDay(0);
+        }
+
+        function switchDay(index) {
+            document.querySelectorAll('.day-tab').forEach((t, i) => t.classList.toggle('active', i === index));
+            renderDay(index);
+            window.scrollTo(0, 0);
+        }
+
+        function renderDay(index) {
+            const day = itinerary[index];
+            let html = `<div class="day-summary"><div><strong>${day.dayNum}</strong> · ${day.date} (${day.weekday})</div><div style="font-size:12px;">${day.weather}</div></div>`;
+            
+            day.items.forEach(item => {
+                let tags = item.tags.map(t => `<span class="tag ${t.includes('吃')?'tag-eat':t.includes('買')?'tag-buy':t.includes('預約')?'tag-book':'tag-must'}">${t}</span>`).join('');
+                html += `
+                    <div class="item-card">
+                        <div class="card-top-strip strip-${item.type}"></div>
+                        <div class="card-body">
+                            <div class="card-meta"><span>${item.time}</span><span>${item.type.toUpperCase()}</span></div>
+                            <div class="card-title">${item.title}</div>
+                            <div class="card-tags">${tags}</div>
+                            <div class="card-info">${item.detail}</div>
+                            ${item.story ? `<div class="story-toggle" onclick="this.nextElementSibling.style.display='block';this.style.display='none'">📖 點我看攻略故事</div><div class="story-box">${item.story}</div>` : ''}
+                            <div class="card-footer">
+                                <span style="font-weight:700;">${item.cost}</span>
+                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.address)}" target="_blank" class="btn-nav">導航</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('day-content').innerHTML = html;
+        }
+
+        function showMainTab(tab) {
+            document.getElementById('itinerary-view').classList.toggle('active', tab === 'itinerary');
+            document.getElementById('tools-view').classList.toggle('active', tab === 'tools');
+            document.getElementById('main-header').style.display = (tab === 'itinerary') ? 'block' : 'none';
+            document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', (tab === 'itinerary' && i === 0) || (tab === 'tools' && i === 1)));
+        }
+
+        function addExp() {
+            const n = document.getElementById('exp-name'), a = document.getElementById('exp-amt'), u = document.getElementById('exp-unit');
+            if(!n.value || !a.value) return;
+            const amt = parseFloat(a.value);
+            expenses.push({ id: Date.now(), name: n.value, amt: amt, unit: u.value, twd: u.value==='TWD'?amt:Math.round(amt*JPY_TO_TWD) });
+            n.value=''; a.value=''; renderExp();
+        }
+
+        function renderExp() {
+            const list = document.getElementById('expense-list');
+            let total = 0;
+            list.innerHTML = expenses.map(e => {
+                total += e.twd;
+                return `<div class="info-row"><div><b>${e.name}</b><br><small style="color:#888">${e.unit==='JPY'?'¥':'$'}${e.amt.toLocaleString()} → NT$${e.twd}</small></div><button onclick="expenses=expenses.filter(x=>x.id!==${e.id});renderExp()" style="border:none;background:none;color:#ccc;">✕</button></div>`;
+            }).reverse().join('');
+            document.getElementById('total-display').innerText = `NT$ ${total.toLocaleString()}`;
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

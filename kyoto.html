@@ -1,285 +1,1116 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>關西之旅小助手 2026</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<!doctype html>
+<html lang="zh-Hant">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#2F4F4F" />
+		<title>2026 京阪神行程小工具</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				--ink: #2f4f4f;
+				--bg: #f5f5f5;
+				--card: #ffffff;
+				--accent: #ff6b6b;
+				--muted: rgba(47, 79, 79, 0.64);
+				--line: rgba(47, 79, 79, 0.14);
+				--shadow: 0 10px 28px rgba(47, 79, 79, 0.12);
+				--radius: 16px;
+			}
 
-    <style>
-        :root {
-            --primary: #2F4F4F;
-            --primary-light: #4A6D6D; 
-            --accent: #FF6B6B;
-            --bg: #F5F5F5;
-            --card-bg: #FFFFFF;
-            --text-main: #333333;
-            --text-sub: #666666;
-            --line: #E0E0E0;
-            --tag-eat: #FFF0F0; --text-eat: #D32F2F;
-            --tag-buy: #F3E5F5; --text-buy: #7B1FA2;
-            --tag-book: #E3F2FD; --text-book: #1976D2;
-            --tag-must: #FFF3E0; --text-must: #E65100;
-            --type-spot: #00897B; --type-food: #FF9800; --type-transport: #78909C; --type-shop: #8E24AA;
-        }
+			* {
+				box-sizing: border-box;
+			}
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body {
-            margin: 0; padding: 0;
-            font-family: 'Inter', 'Noto Sans JP', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            padding-bottom: 80px;
-            background-image: radial-gradient(#E0E0E0 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
+			html,
+			body {
+				height: 100%;
+			}
 
-        /* --- 頂部導航 --- */
-        .sticky-header { position: sticky; top: 0; z-index: 1000; background-color: var(--primary); }
-        header { padding: 15px 16px 10px 16px; color: white; }
-        header h1 { font-size: 18px; margin: 0; letter-spacing: 1px; }
+			body {
+				margin: 0;
+				font-family: Inter, "Noto Sans JP", system-ui, -apple-system, "SF Pro Text",
+					"Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang TC", "Noto Sans TC",
+					sans-serif;
+				color: var(--ink);
+				background: var(--bg);
+				-webkit-font-smoothing: antialiased;
+				text-rendering: optimizeLegibility;
+			}
 
-        .day-selector {
-            display: flex; overflow-x: auto; background: var(--primary-light);
-            padding: 0 8px; gap: 8px; scrollbar-width: none;
-        }
-        .day-selector::-webkit-scrollbar { display: none; }
-        .day-tab {
-            flex: 0 0 auto; padding: 10px 15px; color: rgba(255,255,255,0.7);
-            font-size: 13px; font-weight: 600; text-align: center; border-bottom: 3px solid transparent;
-        }
-        .day-tab.active { color: white; border-bottom: 3px solid var(--accent); background: rgba(255,255,255,0.1); }
+			/* Very subtle checkered (市松) accent */
+			.app {
+				min-height: 100%;
+				padding-bottom: 84px;
+				background-image:
+					linear-gradient(45deg, rgba(47, 79, 79, 0.03) 25%, transparent 25%),
+					linear-gradient(-45deg, rgba(47, 79, 79, 0.03) 25%, transparent 25%),
+					linear-gradient(45deg, transparent 75%, rgba(47, 79, 79, 0.03) 75%),
+					linear-gradient(-45deg, transparent 75%, rgba(47, 79, 79, 0.03) 75%);
+				background-size: 32px 32px;
+				background-position: 0 0, 0 16px, 16px -16px, -16px 0;
+			}
 
-        .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+			.topbar {
+				position: sticky;
+				top: 0;
+				z-index: 5;
+				background: rgba(245, 245, 245, 0.88);
+				backdrop-filter: blur(10px);
+				border-bottom: 1px solid var(--line);
+			}
 
-        /* --- 行程卡片 --- */
-        .view-section { display: none; }
-        .view-section.active { display: block; }
+			.topbar-inner {
+				max-width: 560px;
+				margin: 0 auto;
+				padding: 14px 16px 10px;
+			}
 
-        .day-summary {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 16px; background: white; padding: 12px;
-            border-radius: 10px; border-left: 5px solid var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
+			.title {
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				gap: 12px;
+			}
 
-        .item-card { background: var(--card-bg); border-radius: 12px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); overflow: hidden; }
-        .card-top-strip { height: 6px; width: 100%; }
-        .strip-spot { background: var(--type-spot); }
-        .strip-food { background: var(--type-food); }
-        .strip-transport { background: var(--type-transport); }
-        .strip-shop { background: var(--type-shop); }
-        .strip-hotel { background: #333; }
+			.title h1 {
+				margin: 0;
+				font-size: 18px;
+				letter-spacing: 0.2px;
+			}
 
-        .card-body { padding: 16px; }
-        .card-meta { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: var(--text-sub); font-weight: 600; }
-        .card-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
-        .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-        .tag { font-size: 11px; padding: 3px 7px; border-radius: 4px; font-weight: 600; }
-        .tag-eat { background: var(--tag-eat); color: var(--text-eat); }
-        .tag-buy { background: var(--tag-buy); color: var(--text-buy); }
-        .tag-book { background: var(--tag-book); color: var(--text-book); }
-        .tag-must { background: var(--tag-must); color: var(--text-must); }
-        
-        .card-info { font-size: 14px; color: var(--text-main); line-height: 1.5; margin-bottom: 12px; }
-        .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--bg); padding-top: 12px; }
-        .btn-nav { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; text-decoration: none; }
-        
-        .story-box { background: #fdfdfd; padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 13px; border-left: 3px solid var(--accent); display: none; color: #555; line-height: 1.6; }
-        .story-toggle { color: var(--primary); font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 8px; display: inline-block; text-decoration: underline; }
+			.subtitle {
+				margin: 4px 0 0;
+				font-size: 12px;
+				color: var(--muted);
+			}
 
-        /* --- 工具箱卡片 --- */
-        .tool-card { background: white; padding: 16px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
-        .info-row:last-child { border-bottom: none; }
+			main {
+				max-width: 560px;
+				margin: 0 auto;
+				padding: 16px;
+			}
 
-        /* --- 底部導航 --- */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid var(--line); display: flex; height: 65px; z-index: 2000; padding-bottom: env(safe-area-inset-bottom); }
-        .nav-item { flex: 1; text-align: center; font-size: 11px; padding: 10px 0; color: var(--text-sub); }
-        .nav-item.active { color: var(--primary); font-weight: 700; }
-        .nav-icon { font-size: 22px; display: block; margin-bottom: 2px; }
-    </style>
-</head>
-<body>
+			.page {
+				display: none;
+			}
 
-    <div class="sticky-header" id="main-header">
-        <header>
-            <h1>🌸 2026 京阪之旅</h1>
-        </header>
-        <div class="day-selector" id="day-tabs"></div>
-    </div>
+			.page[aria-hidden="false"] {
+				display: block;
+			}
 
-    <div id="itinerary-view" class="view-section active container">
-        <div id="day-content"></div>
-    </div>
+			.day {
+				margin: 14px 0 20px;
+			}
 
-    <div id="tools-view" class="view-section container">
-        <div class="tool-card">
-            <h3 style="color:var(--primary); margin:0 0 12px 0; font-size:16px;">✈️ 航班詳細資訊 (AirAsia X)</h3>
-            <div class="info-row"><span>去程 D7378</span><span>15:40 TPE → 19:20 KIX</span></div>
-            <div class="info-row"><span>回程 D7379</span><span>20:45 KIX → 22:45 TPE</span></div>
-            <div style="font-size:12px; color:var(--text-sub); margin-top:8px; line-height:1.4;">
-                * 抵達關西機場第一航廈 (T1)<br>
-                * 回程櫃檯：T1 航廈 H 區 (預計)
-            </div>
-        </div>
+			.day-header {
+				background: var(--card);
+				border: 1px solid var(--line);
+				border-radius: var(--radius);
+				box-shadow: var(--shadow);
+				padding: 12px 12px;
+				display: grid;
+				gap: 10px;
+			}
 
-        <div class="tool-card">
-            <h3 style="color:var(--primary); margin:0 0 12px 0; font-size:16px;">🏨 住宿詳細資訊</h3>
-            <div style="margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">
-                <div style="font-weight:700; color:var(--primary);">京都：Check In 四條烏丸</div>
-                <div style="font-size:13px; margin:4px 0;">📍 京都市中京區烏丸通錦小路上ル手洗水町 652</div>
-                <div style="font-size:12px; color:var(--accent);">地下鐵「四條站」21號出口步行 2 分</div>
-            </div>
-            <div>
-                <div style="font-weight:700; color:var(--primary);">大阪：Hotel Hillarys 心齋橋</div>
-                <div style="font-size:13px; margin:4px 0;">📍 大阪市中央區東心齋橋 1-17-11</div>
-                <div style="font-size:12px; color:var(--accent);">「心齋橋站」6 號出口，附設頂樓大浴場</div>
-            </div>
-        </div>
+			.day-title {
+				display: flex;
+				align-items: flex-start;
+				justify-content: space-between;
+				gap: 12px;
+			}
 
-        <div class="tool-card">
-            <h3 style="color:var(--primary); margin:0 0 12px 0; font-size:16px; display:flex; justify-content:space-between;">
-                💰 預算與記帳 <span id="total-display" style="color:var(--accent);">NT$ 0</span>
-            </h3>
-            <div style="display:flex; flex-direction:column; gap:10px; background:#f9f9f9; padding:12px; border-radius:8px;">
-                <input type="text" id="exp-name" placeholder="項目內容" style="padding:12px; border:1px solid #ddd; border-radius:6px; font-size:16px;">
-                <div style="display:flex; gap:8px;">
-                    <input type="number" id="exp-amt" placeholder="金額" style="flex:2; padding:12px; border:1px solid #ddd; border-radius:6px; font-size:16px;">
-                    <select id="exp-unit" style="flex:1.2; padding:12px; border:1px solid #ddd; border-radius:6px; background:white;">
-                        <option value="JPY">日圓 (¥)</option>
-                        <option value="TWD">台幣 ($)</option>
-                    </select>
-                    <button onclick="addExp()" style="flex:1; background:var(--primary); color:white; border:none; border-radius:6px; font-weight:bold; font-size:20px;">+</button>
-                </div>
-            </div>
-            <div id="expense-list" style="margin-top:15px;"></div>
-        </div>
-    </div>
+			.day-title .left {
+				display: grid;
+				gap: 4px;
+			}
 
-    <nav class="bottom-nav">
-        <div class="nav-item active" onclick="showMainTab('itinerary')">
-            <span class="nav-icon">🗓️</span>行程
-        </div>
-        <div class="nav-item" onclick="showMainTab('tools')">
-            <span class="nav-icon">🧰</span>工具箱
-        </div>
-    </nav>
+			.day-title .date {
+				font-size: 15px;
+				font-weight: 700;
+			}
 
-    <script>
-        const itinerary = [
-            { date: "4/16", weekday: "三", dayNum: "Day 1", weather: "☁️ 18°C", items: [
-                { time: "19:20", type: "transport", title: "抵達關西機場 (KIX)", detail: "第一航廈落地。提前填妥 Visit Japan Web 掃碼入境。", cost: "", address: "Kansai International Airport", tags: [] },
-                { time: "20:44", type: "transport", title: "JR Haruka 特急", detail: "4 號月台發車，直達京都車站。Klook 買票綠色機台兌換。", cost: "¥2,420", address: "Kansai Airport Station", tags: ["預約"] },
-                { time: "22:30", type: "hotel", title: "京都飯店辦理入住", detail: "CheckIn Hotel 四條烏丸。1F 有 Lawson。", cost: "", address: "CheckIn Hotel Shijo Karasuma", tags: [] }
-            ]},
-            { date: "4/17", weekday: "四", dayNum: "Day 2", weather: "🌤️ 20°C", items: [
-                { time: "07:30", type: "spot", title: "伏見稻荷大社", detail: "避開人潮，獨享千本鳥居。建議拍完空景後前往清水寺。", cost: "免費", address: "Fushimi Inari Taisha", tags: ["必看"], story: "這裡是全日本稻荷神社總本宮，千本鳥居由信徒捐贈，建議清晨抵達可拍到夢幻空景。" },
-                { time: "10:00", type: "spot", title: "清水寺", detail: "巡遊清水舞台與音羽之瀧。二年坂散策。", cost: "¥500", address: "Kiyomizu-dera", tags: ["必看"] },
-                { time: "14:00", type: "food", title: "錦市場", detail: "京都人的廚房。推薦豆乳甜甜圈。", cost: "¥2,000", address: "Nishiki Market", tags: ["必吃"] },
-                { time: "19:30", type: "food", title: "滿天串燒 (先斗町)", detail: "鴨川旁極具氣氛。必點雞肉丸、雞皮串。", cost: "¥4,000", address: "Manten Pontocho", tags: ["必點", "預約"] }
-            ]},
-            { date: "4/18", weekday: "五", dayNum: "Day 3", weather: "☁️ 19°C", items: [
-                { time: "09:02", type: "spot", title: "嵐山小火車 (龜岡站)", detail: "看保津川峽谷風景。官網提前訂票，推雙數座。", cost: "¥880", address: "Kameoka Station", tags: ["預約"], story: "賞楓/櫻名所。如果是週末，請務必在一個月前開搶票券。" },
-                { time: "11:30", type: "spot", title: "嵐山竹林小徑", detail: "經典電影場景，感受翠綠竹林。鄰近御髮神社。", cost: "免費", address: "Arashiyama Bamboo Grove", tags: ["必看"] },
-                { time: "13:00", type: "food", title: "嵐山商業街/Miffy", detail: "吃限定紅豆麵包，買伴手禮。", cost: "¥2,000", address: "Miffy Sakura Bakery", tags: ["必買"] }
-            ]},
-            { date: "4/19", weekday: "六", dayNum: "Day 4", weather: "☀️ 21°C", items: [
-                { time: "08:30", type: "spot", title: "宇治 平等院", detail: "千年鳳凰堂，映照池水美景。", cost: "¥700", address: "Byodoin", tags: ["必看"] },
-                { time: "11:30", type: "food", title: "中村藤吉 本店", detail: "抹茶控必朝聖。必點竹筒抹茶冰淇淋。", cost: "¥3,000", address: "Nakamura Tokichi", tags: ["必吃"] },
-                { time: "14:30", type: "spot", title: "奈良公園", detail: "買鹿仙貝與鹿互動。小心鹿群包圍！", cost: "¥200", address: "Nara Park", tags: ["必吃"] },
-                { time: "20:00", type: "hotel", title: "大阪飯店 Check-in", detail: "Hotel Hillarys 心齋橋。去頂樓泡大浴場。", cost: "", address: "Hotel Hillarys Shinsaibashi", tags: [] }
-            ]},
-            { date: "4/20", weekday: "日", dayNum: "Day 5", weather: "🌤️ 22°C", items: [
-                { time: "10:45", type: "spot", title: "勝尾寺", detail: "滿山滿谷不倒翁，求勝運名所。", cost: "¥500", address: "Katsuo-ji", tags: ["必看", "必買"] },
-                { time: "14:00", type: "spot", title: "箕面大瀑布", detail: "森林浴散步。必吃炸楓葉。", cost: "免費", address: "Minoh Waterfall", tags: ["必吃"] },
-                { time: "18:00", type: "shop", title: "心齋橋/道頓堀", detail: "藥妝採買、固力果霓虹燈拍照。", cost: "", address: "Dotonbori", tags: ["必看"] }
-            ]},
-            { date: "4/21", weekday: "一", dayNum: "Day 6", weather: "☀️ 23°C", items: [
-                { time: "09:00", type: "spot", title: "大阪城天守閣", detail: "大阪地標，宏偉壯觀。", cost: "¥600", address: "Osaka Castle", tags: ["必看"] },
-                { time: "12:00", type: "food", title: "黑門市場", detail: "高品質海鮮、神戶牛現煎。", cost: "¥4,000", address: "Kuromon Market", tags: ["必吃"] },
-                { time: "18:00", type: "spot", title: "梅田空中庭園", detail: "露天展望台看大阪夜景。", cost: "¥1,500", address: "Umeda Sky Building", tags: ["必看"] }
-            ]},
-            { date: "4/22", weekday: "二", dayNum: "Day 7", weather: "☁️ 20°C", items: [
-                { time: "10:00", type: "shop", title: "心齋橋最後購物", detail: "Parco/大丸百貨補貨。", cost: "", address: "Shinsaibashi Parco", tags: ["必吃"] },
-                { time: "15:00", type: "shop", title: "臨空城 Outlet", detail: "回機前最後大採買，運動品牌極優惠。", cost: "", address: "Rinku Outlet", tags: ["必買"] },
-                { time: "20:55", type: "transport", title: "回程航班起飛", detail: "關西機場 D7379 往台北。", cost: "", address: "Kansai International Airport", tags: [] }
-            ]}
-        ];
+			.day-title .meta {
+				font-size: 12px;
+				color: var(--muted);
+			}
 
-        let expenses = [];
-        const JPY_TO_TWD = 0.22;
+			.weather {
+				display: flex;
+				align-items: center;
+				justify-content: flex-end;
+				gap: 10px;
+			}
 
-        function init() {
-            const tabContainer = document.getElementById('day-tabs');
-            tabContainer.innerHTML = itinerary.map((day, i) => `
-                <div class="day-tab ${i === 0 ? 'active' : ''}" onclick="switchDay(${i})">
-                    ${day.date}<br>${day.dayNum}
-                </div>
-            `).join('');
-            renderDay(0);
-        }
+			.wx-icon {
+				width: 34px;
+				height: 34px;
+				display: grid;
+				place-items: center;
+				border-radius: 10px;
+				background: rgba(47, 79, 79, 0.06);
+				border: 1px solid rgba(47, 79, 79, 0.08);
+				font-size: 18px;
+			}
 
-        function switchDay(index) {
-            document.querySelectorAll('.day-tab').forEach((t, i) => t.classList.toggle('active', i === index));
-            renderDay(index);
-            window.scrollTo(0, 0);
-        }
+			.wx-text {
+				display: grid;
+				gap: 2px;
+				text-align: right;
+			}
 
-        function renderDay(index) {
-            const day = itinerary[index];
-            let html = `<div class="day-summary"><div><strong>${day.dayNum}</strong> · ${day.date} (${day.weekday})</div><div style="font-size:12px;">${day.weather}</div></div>`;
-            
-            day.items.forEach(item => {
-                let tags = item.tags.map(t => `<span class="tag ${t.includes('吃')?'tag-eat':t.includes('買')?'tag-buy':t.includes('預約')?'tag-book':'tag-must'}">${t}</span>`).join('');
-                html += `
-                    <div class="item-card">
-                        <div class="card-top-strip strip-${item.type}"></div>
-                        <div class="card-body">
-                            <div class="card-meta"><span>${item.time}</span><span>${item.type.toUpperCase()}</span></div>
-                            <div class="card-title">${item.title}</div>
-                            <div class="card-tags">${tags}</div>
-                            <div class="card-info">${item.detail}</div>
-                            ${item.story ? `<div class="story-toggle" onclick="this.nextElementSibling.style.display='block';this.style.display='none'">📖 點我看攻略故事</div><div class="story-box">${item.story}</div>` : ''}
-                            <div class="card-footer">
-                                <span style="font-weight:700;">${item.cost}</span>
-                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.address)}" target="_blank" class="btn-nav">導航</a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            document.getElementById('day-content').innerHTML = html;
-        }
+			.wx-text .t {
+				font-weight: 700;
+				font-size: 12px;
+			}
 
-        function showMainTab(tab) {
-            document.getElementById('itinerary-view').classList.toggle('active', tab === 'itinerary');
-            document.getElementById('tools-view').classList.toggle('active', tab === 'tools');
-            document.getElementById('main-header').style.display = (tab === 'itinerary') ? 'block' : 'none';
-            document.querySelectorAll('.nav-item').forEach((n, i) => n.classList.toggle('active', (tab === 'itinerary' && i === 0) || (tab === 'tools' && i === 1)));
-        }
+			.wx-text .d {
+				font-size: 12px;
+				color: var(--muted);
+			}
 
-        function addExp() {
-            const n = document.getElementById('exp-name'), a = document.getElementById('exp-amt'), u = document.getElementById('exp-unit');
-            if(!n.value || !a.value) return;
-            const amt = parseFloat(a.value);
-            expenses.push({ id: Date.now(), name: n.value, amt: amt, unit: u.value, twd: u.value==='TWD'?amt:Math.round(amt*JPY_TO_TWD) });
-            n.value=''; a.value=''; renderExp();
-        }
+			.wx-source {
+				font-size: 11px;
+				color: rgba(47, 79, 79, 0.55);
+			}
 
-        function renderExp() {
-            const list = document.getElementById('expense-list');
-            let total = 0;
-            list.innerHTML = expenses.map(e => {
-                total += e.twd;
-                return `<div class="info-row"><div><b>${e.name}</b><br><small style="color:#888">${e.unit==='JPY'?'¥':'$'}${e.amt.toLocaleString()} → NT$${e.twd}</small></div><button onclick="expenses=expenses.filter(x=>x.id!==${e.id});renderExp()" style="border:none;background:none;color:#ccc;">✕</button></div>`;
-            }).reverse().join('');
-            document.getElementById('total-display').innerText = `NT$ ${total.toLocaleString()}`;
-        }
+			.items {
+				margin-top: 12px;
+				display: grid;
+				gap: 10px;
+			}
 
-        window.onload = init;
-    </script>
-</body>
-</html>
+			.card {
+				background: var(--card);
+				border: 1px solid var(--line);
+				border-radius: var(--radius);
+				box-shadow: var(--shadow);
+				overflow: hidden;
+			}
+
+			.card[draggable="true"] {
+				cursor: grab;
+			}
+
+			.card.dragging {
+				opacity: 0.65;
+			}
+
+			.card-top {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				padding: 12px;
+			}
+
+			.tag {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				padding: 6px 10px;
+				border-radius: 999px;
+				font-size: 12px;
+				font-weight: 700;
+				line-height: 1;
+				border: 1px solid rgba(0, 0, 0, 0.06);
+			}
+
+			.tag.sight {
+				background: rgba(32, 178, 170, 0.16);
+				color: #0b5c58;
+			}
+			.tag.food {
+				background: rgba(255, 149, 0, 0.18);
+				color: #8a4f00;
+			}
+			.tag.transit {
+				background: rgba(99, 102, 241, 0.12);
+				color: #3f4d7a;
+			}
+			.tag.stay {
+				background: rgba(47, 79, 79, 0.12);
+				color: var(--ink);
+			}
+			.tag.shop {
+				background: rgba(255, 107, 107, 0.14);
+				color: #7a2b2b;
+			}
+			.tag.other {
+				background: rgba(47, 79, 79, 0.08);
+				color: var(--ink);
+			}
+
+			.time {
+				font-size: 12px;
+				color: var(--muted);
+				font-weight: 600;
+			}
+
+			.card-body {
+				padding: 0 12px 12px;
+				display: grid;
+				gap: 8px;
+			}
+
+			.note-input {
+				width: 100%;
+				min-height: 92px;
+				resize: vertical;
+				padding: 10px 10px;
+				border-radius: 12px;
+				border: 1px solid rgba(47, 79, 79, 0.18);
+				background: #fff;
+				font-size: 13px;
+				line-height: 1.45;
+				color: var(--ink);
+			}
+
+			.note-input:focus {
+				outline: none;
+				border-color: rgba(47, 79, 79, 0.34);
+			}
+
+			.name {
+				font-size: 15px;
+				font-weight: 800;
+				letter-spacing: 0.1px;
+			}
+
+			.row {
+				display: grid;
+				grid-template-columns: 72px 1fr;
+				gap: 10px;
+				font-size: 13px;
+				line-height: 1.35;
+			}
+
+			.row .k {
+				color: rgba(47, 79, 79, 0.6);
+				font-weight: 700;
+			}
+
+			.row .v {
+				color: var(--ink);
+			}
+
+			.guide {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+				margin-top: 2px;
+			}
+
+			.pill {
+				display: inline-flex;
+				align-items: center;
+				padding: 6px 10px;
+				border-radius: 999px;
+				font-size: 12px;
+				font-weight: 800;
+				border: 1px solid rgba(0, 0, 0, 0.06);
+			}
+			.pill.must-eat {
+				background: rgba(255, 59, 48, 0.14);
+				color: #7a1b17;
+			}
+			.pill.must-order {
+				background: rgba(255, 149, 0, 0.18);
+				color: #8a4f00;
+			}
+			.pill.must-buy {
+				background: rgba(175, 82, 222, 0.16);
+				color: #4c1c66;
+			}
+			.pill.reserve {
+				background: rgba(10, 132, 255, 0.16);
+				color: #063a74;
+			}
+
+			details.story {
+				border-top: 1px dashed rgba(47, 79, 79, 0.24);
+				padding-top: 8px;
+			}
+
+			details.story > summary {
+				cursor: pointer;
+				user-select: none;
+				font-size: 13px;
+				font-weight: 800;
+				color: var(--ink);
+				list-style: none;
+			}
+
+			details.story > summary::-webkit-details-marker {
+				display: none;
+			}
+
+			details.story > summary .hint {
+				font-size: 12px;
+				font-weight: 700;
+				color: rgba(47, 79, 79, 0.6);
+				margin-left: 8px;
+			}
+
+			details.story p {
+				margin: 8px 0 0;
+				font-size: 13px;
+				color: rgba(47, 79, 79, 0.78);
+				line-height: 1.45;
+			}
+
+			.actions {
+				display: flex;
+				gap: 10px;
+				align-items: center;
+				justify-content: flex-end;
+				margin-top: 4px;
+			}
+
+			.btn {
+				appearance: none;
+				border: 1px solid rgba(47, 79, 79, 0.18);
+				background: rgba(47, 79, 79, 0.06);
+				color: var(--ink);
+				border-radius: 12px;
+				padding: 10px 12px;
+				min-height: 44px;
+				font-weight: 800;
+				font-size: 13px;
+				text-decoration: none;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 8px;
+			}
+
+			.btn.primary {
+				background: var(--accent);
+				color: #fff;
+				border-color: rgba(0, 0, 0, 0.06);
+			}
+
+			.btn:active {
+				transform: translateY(1px);
+			}
+
+			.tool-grid {
+				display: grid;
+				gap: 12px;
+			}
+
+			.section-title {
+				font-size: 14px;
+				font-weight: 900;
+				margin: 0 0 8px;
+			}
+
+			.tool-card {
+				background: var(--card);
+				border: 1px solid var(--line);
+				border-radius: var(--radius);
+				box-shadow: var(--shadow);
+				padding: 12px;
+			}
+
+			.tool-card .small {
+				font-size: 12px;
+				color: var(--muted);
+				margin-top: 6px;
+				line-height: 1.45;
+			}
+
+			.kv {
+				display: grid;
+				gap: 8px;
+				margin-top: 10px;
+			}
+
+			.kv .line {
+				display: grid;
+				grid-template-columns: 92px 1fr;
+				gap: 10px;
+				font-size: 13px;
+				line-height: 1.35;
+			}
+
+			.kv .line .k {
+				color: rgba(47, 79, 79, 0.6);
+				font-weight: 800;
+			}
+
+			.kv .line .v {
+				font-weight: 650;
+			}
+
+			.ledger {
+				display: grid;
+				gap: 12px;
+				margin-top: 10px;
+			}
+
+			.ledger form {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 10px;
+			}
+
+			.ledger form .full {
+				grid-column: 1 / -1;
+			}
+
+			label {
+				display: grid;
+				gap: 6px;
+				font-size: 12px;
+				font-weight: 800;
+				color: rgba(47, 79, 79, 0.72);
+			}
+
+			input,
+			select {
+				width: 100%;
+				min-height: 44px;
+				border-radius: 12px;
+				border: 1px solid rgba(47, 79, 79, 0.18);
+				background: #fff;
+				padding: 10px 12px;
+				font-size: 14px;
+				color: var(--ink);
+				outline: none;
+			}
+
+			input:focus,
+			select:focus {
+				border-color: rgba(47, 79, 79, 0.4);
+				box-shadow: 0 0 0 3px rgba(47, 79, 79, 0.12);
+			}
+
+			.table {
+				width: 100%;
+				border-collapse: collapse;
+				overflow: hidden;
+				border-radius: 12px;
+				border: 1px solid var(--line);
+			}
+
+			.table th,
+			.table td {
+				padding: 10px 10px;
+				border-bottom: 1px solid rgba(47, 79, 79, 0.12);
+				font-size: 13px;
+				text-align: left;
+				vertical-align: top;
+			}
+
+			.table th {
+				background: rgba(47, 79, 79, 0.06);
+				font-weight: 900;
+			}
+
+			.table tr:last-child td {
+				border-bottom: none;
+			}
+
+			.table .right {
+				text-align: right;
+			}
+
+			.danger {
+				background: rgba(255, 59, 48, 0.10);
+				border-color: rgba(255, 59, 48, 0.18);
+				color: #7a1b17;
+			}
+
+			.tabs {
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				z-index: 10;
+				background: rgba(245, 245, 245, 0.92);
+				backdrop-filter: blur(12px);
+				border-top: 1px solid var(--line);
+			}
+
+			.tabs-inner {
+				max-width: 560px;
+				margin: 0 auto;
+				padding: 10px 12px;
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 10px;
+			}
+
+			.tab {
+				min-height: 50px;
+				border-radius: 14px;
+				border: 1px solid rgba(47, 79, 79, 0.18);
+				background: #fff;
+				font-weight: 900;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+			}
+
+			.tab[aria-selected="true"] {
+				background: rgba(47, 79, 79, 0.08);
+				border-color: rgba(47, 79, 79, 0.30);
+			}
+
+			.hint-note {
+				font-size: 12px;
+				color: rgba(47, 79, 79, 0.62);
+				line-height: 1.45;
+				margin: 10px 2px 0;
+			}
+
+			.day-tabs {
+				position: sticky;
+				top: 64px;
+				z-index: 4;
+				margin: 0 -16px 12px;
+				padding: 10px 16px;
+				overflow-x: auto;
+				display: flex;
+				gap: 10px;
+				scrollbar-width: none;
+				background: rgba(245, 245, 245, 0.92);
+				backdrop-filter: blur(10px);
+				border-bottom: 1px solid rgba(47, 79, 79, 0.10);
+			}
+
+			.day-tabs::-webkit-scrollbar {
+				display: none;
+			}
+
+			.day-tab {
+				flex: 0 0 auto;
+				min-height: 44px;
+				padding: 10px 12px;
+				border-radius: 999px;
+				border: 1px solid rgba(47, 79, 79, 0.18);
+				background: #fff;
+				color: var(--ink);
+				font-weight: 900;
+				font-size: 13px;
+				white-space: nowrap;
+			}
+
+			.day-tab[aria-selected="true"] {
+				background: rgba(47, 79, 79, 0.10);
+				border-color: rgba(47, 79, 79, 0.34);
+			}
+
+			.day-tab:active {
+				transform: translateY(1px);
+			}
+
+			@media (max-width: 360px) {
+				.row {
+					grid-template-columns: 64px 1fr;
+				}
+				.kv .line {
+					grid-template-columns: 86px 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="app" id="app">
+			<header class="topbar">
+				<div class="topbar-inner">
+					<div class="title">
+						<h1>🌸 2026 京阪神行程小工具</h1>
+						<div class="wx-source" id="nowHint"></div>
+					</div>
+					<p class="subtitle">手機優先｜一頁搞定每日行程＋吃吃喝喝＋旅行工具箱</p>
+				</div>
+			</header>
+
+			<main>
+				<section class="page" id="page-daily" aria-hidden="false">
+					<div class="day-tabs" id="dayTabs" role="tablist" aria-label="每日分頁"></div>
+					<div id="dailyRoot"></div>
+					<div class="hint-note">
+						天氣模組預設為「示意資料」。要啟用即時天氣：請在程式碼中填入 `WEATHERAPI_KEY`。
+					</div>
+				</section>
+
+				<section class="page" id="page-food" aria-hidden="true">
+					<div class="day-tabs" id="foodPlaceTabs" role="tablist" aria-label="吃吃喝喝地點"></div>
+					<div id="foodRoot"></div>
+				</section>
+
+				<section class="page" id="page-tools" aria-hidden="true">
+					<div class="tool-grid" id="toolsRoot"></div>
+				</section>
+			</main>
+
+			<nav class="tabs" aria-label="主要導覽">
+				<div class="tabs-inner">
+					<button class="tab" id="tab-daily" aria-selected="true" type="button">
+						🗓️ 每日行程
+					</button>
+					<button class="tab" id="tab-food" aria-selected="false" type="button">
+						🍴 吃吃喝喝
+					</button>
+					<button class="tab" id="tab-tools" aria-selected="false" type="button">
+						🧰 旅行工具箱
+					</button>
+				</div>
+			</nav>
+		</div>
+
+		<script>
+			/**
+			 * 資料輸入（結構化文字）：
+			 * - 你可以直接把新的 CSV 文字貼到 `ITINERARY_CSV`，系統會自動解析與渲染。
+			 */
+			const ITINERARY_CSV = `日期,時間,類型,名稱,詳細資訊,地址/地點,費用,備註/攻略
+4/16,19:20,抵達,關西機場 (KIX),航班 D7378 落地,大阪府泉佐野市泉州空港北,-,提前填妥 Visit Japan Web 掃碼入境
+4/16,20:44,交通,JR Haruka,關西機場直達京都車站,JR 關西機場站 4 號月台,"💰 2,420円",【預約】Klook 購票，綠色機台兌換實體票
+4/16,22:30,住宿,CheckIn Hotel 四條烏丸,辦理入住手續,京都市中京区手洗水町654-2,-,21 號出口步行 2 分鐘，1F 有 Lawson
+4/17,07:30,景點,伏見稻荷大社,避開人潮，獨享千本鳥居,京都市伏見区深草藪之内町68,🆓 免費,【必看】狐狸繪馬，建議清晨抵達可拍空景
+4/17,10:00,景點,清水寺,巡遊清水舞台與地主神社,京都市東山区清水1-294,💰 500円,【必看】本堂舞台、音羽之瀧祈福
+4/17,12:00,購物,二年坂/三年坂,充滿古都風味的散策小路,京都市東山区清水,-,【必看】宮崎駿商店、特色星巴克
+4/17,14:00,購物,錦市場,京都人的廚房，各類海鮮小吃,京都市中京区西大文字町609,"💰 2,000円",【必吃】豆乳甜甜圈，18:00 前會收攤
+4/17,16:30,景點,下鴨神社,世界遺產，守護女性的神社,京都市左京区下鴨泉川町59,🆓 免費,【必買】超唯美「蕾絲御守」與「水守」
+4/17,19:30,餐廳,滿天串燒 (先斗町),鴨川旁極具氣氛的串燒店,京都市中京区若松町140-1,"💰 4,000円",【必點】雞肉丸串、雞皮串，建議預約
+4/18,08:00,交通,JR 山陰本線,搭往馬堀站轉小火車,JR 京都車站或二條站,💰 330円,從飯店出發建議搭東西線至二條站轉 JR
+4/18,09:02,景點,嵐山小火車,龜岡站發車前往嵐山站,龜岡觀光車站,💰 880円,【預約】官網提前訂票，推薦雙數座
+4/18,10:30,景點,御髮神社,全日唯一頭髮守護神,京都市右京区嵯峨小倉山田淵山町10,🆓 免費,【必看】剪下一撮頭髮放入「髮塚」祈福
+4/18,11:30,景點,竹林小徑,聽風吹過竹林的靜謐感,京都市右京区嵯峨小倉山,🆓 免費,【必看】嵐山代表性景觀，電影取景地
+4/18,13:00,餐廳,嵐山商業街,在地小吃與 Miffy 麵包,京都市右京区嵯峨天龍寺造路町,"💰 2,000円",【必買】Miffy 嵐山限定款紅豆麵包
+4/19,08:30,景點,宇治平等院,硬幣上的千年鳳凰堂,宇治市宇治蓮華116,💰 700円,【必看】鳳凰堂反映在池水上的倒影
+4/19,11:30,餐廳,中村藤吉 本店,宇治抹茶甜點天花板,宇治市宇治壱番10,"💰 3,000円",【必點】竹筒抹茶冰淇淋，需現場抽號碼牌
+4/19,14:30,景點,奈良公園,與親人(貪吃)的鹿互動,奈良市雑司町,💰 200円,【必吃】鹿仙貝，小心別被鹿群包圍
+4/19,16:30,景點,若草山,登上山坡眺望奈良全景,奈良市雑司町,💰 150円,【必看】夕陽極美，需在 17:00 前入場
+4/19,20:00,住宿,ZONE 心齋橋西區,抵達大阪飯店 Check-in,大阪市西区立売堀1-10-2,-,本町站/心齋橋站步行可達
+4/20,08:30,交通,御堂筋線+公車,前往勝尾寺最快路徑,箕面萱野站 8 號站台,💰 660円,2026 新地標箕面萱野站轉 30 號巴士
+4/20,10:45,景點,勝尾寺,滿坑滿谷的祈福不倒翁,箕面市粟生間谷2914-1,💰 500円,【必吃】達摩造型便當，【必買】不倒翁御守
+4/20,14:00,景點,箕面大瀑布,負離子滿滿的森林散步,箕面市箕面公園,🆓 免費,【必吃】炸楓葉，口感酥脆微甜
+4/20,18:00,購物,心齋橋/道頓堀,大阪地標與藥妝採買,大阪市中央区心齋橋筋,-,【必看】跑跑人固力果霓虹燈
+4/21,09:00,景點,大阪城天守閣,大阪象徵，宏偉壯觀,大阪市中央区大阪城1-1,💰 600円,【必看】登上頂樓俯瞰大阪市區景觀
+4/21,12:00,餐廳,黑門市場,高品質海鮮、神戶牛,大阪市中央区日本橋2-4-1,"💰 4,000円",【必吃】現開生蠔、丸善食肉店神戶牛
+4/21,15:00,景點,難波八阪神社,威風凜凜的巨大獅子殿,大阪市浪速区元町2-9-19,🆓 免費,【必看】獅子頭大殿，象徵吸走厄運
+4/21,18:00,景點,梅田空中庭園,未來感建築與高空夜景,大阪市北区大淀中1-1-88,"💰 1,500円",【必看】露天圓形展望台，情侶約會聖地
+4/22,10:00,購物,難波 Parco/大丸,最後行李塞滿機會,大阪市中央区心齋橋筋1-7-1,-,【必吃】Shake Shack 漢堡
+4/22,15:00,購物,臨空城 Outlet,機場前最後一站大掃貨,泉佐野市りんくう往來南3-28,-,【必買】運動品牌、精品折扣極大
+4/22,18:30,交通,南海電鐵,臨空城至關西機場,南海電鐵臨空城站,💰 370円,僅需 6 分鐘即可抵達 T1 航廈
+4/22,20:55,起飛,關西機場 (KIX),航班 D7379 起飛回台,大阪府泉佐野市泉州空港北,-,建議提前 3 小時抵達辦理登機`;
+
+			const FOOD_CSV = `標題,筆記,網址,標籤,留言
+,,,🏨 家;🤘 吃飯飯;🎃 景點,
+Kiyasu Sohonpo,,https://www.google.com/maps/place/Kiyasu+Sohonpo/data=!4m2!3m1!1s0x6000e5ce1ef2f257:0x75f0a2e2b26b1e7e,🤘 吃飯飯,
+吟釀拉麵 久保田,"❗️貼心提醒：這家店需要先進門在販賣機點餐好再到外面排隊，等店員出來收你點餐的單子，千萬不要跟著人潮傻傻地排隊
+
+來日本怎麼可以錯過在地拉麵店，這家位於京都車站附近，在Google評論上算是非常高的拉麵店🍜(2600多則評論還有4.4顆星，在日本算是寶藏名店了)，我看過不少網紅拍片介紹過，也許有不少人已經知道這間店，但我還是很想介紹給大家。還記得每次經過這條路都會看到大排長龍的人潮，第一次吃的時候是晚上8點多還排了1個多小時，但我必須說真的值得🥹 非常推薦這間的沾麵，湯頭是我在其他地方沒有喝過的，絕對不是什麼味噌、醬油、鹽味的口味，我覺得多了些海鮮的鮮味外，還帶點微微的辣但不會像日本拉麵給人既定印象是偏鹹要猛灌水，是那種會讓人忍不住一口接著一口的湯頭🤤 如果是食量比較大的人可以點麵加大或是另外加點一碗山椒飯，日幣1000多就可以吃很飽，也是一家高CP值的店，推薦給大家🙌🏻
+
+⚠️小Tips：店內大概只有10個位子，只有在它營業前去排隊這個選項，不然基本上都是需要排隊的，除非你個人有不用排隊的體質，不然還是乖乖早點去卡位吧",https://www.google.com/maps/place/%E5%90%9F%E9%87%80%E6%8B%89%E9%BA%B5+%E4%B9%85%E4%BF%9D%E7%94%B0/data=!4m2!3m1!1s0x600108a13c7a2d5d:0x2c1acd85fdf5ca75,🤘 吃飯飯,
+Kyoto Ramen Koji,各種拉麵都在這裡,https://www.google.com/maps/place/Kyoto+Ramen+Koji/data=!4m2!3m1!1s0x6001089a3a451a29:0x8aa203d50015c17c,🤘 吃飯飯,
+Yukou,牡蠣，蛤蜊為基底,https://www.google.com/maps/place/Yukou/data=!4m2!3m1!1s0x6001094a10b57a45:0xf30619cc172bde60,🤘 吃飯飯,
+Hanayori Kiyoe,湯葉豆皮奶油可樂餅,https://www.google.com/maps/place/Hanayori+Kiyoe/data=!4m2!3m1!1s0x600108941ddad50b:0x23e36cf9285ce04e,🤘 吃飯飯,
+Arashiyama Curry,,https://www.google.com/maps/place/Arashiyama+Curry/data=!4m2!3m1!1s0x6001a9fc2a5eddab:0x1faaab96b6721a74,🤘 吃飯飯,
+烤糰子 十文堂,,https://www.google.com/maps/place/%E7%83%A4%E7%B3%B0%E5%AD%90+%E5%8D%81%E6%96%87%E5%A0%82/data=!4m2!3m1!1s0x600108c5960e571d:0x5a1738a823cf587,🤘 吃飯飯,
+Checkin 飯店 四條烏丸,,https://www.google.com/maps/place/Checkin+%E9%A3%AF%E5%BA%97+%E5%9B%9B%E6%A2%9D%E7%83%8F%E4%B8%B8/data=!4m2!3m1!1s0x6001089af1a3c3af:0xb203717b2742c744,🏨 家,
+Kushikatsu Daruma - Shinsekai Main Shop,九十多年歷史炸串,https://www.google.com/maps/place/Kushikatsu+Daruma+-+Shinsekai+Main+Shop/data=!4m2!3m1!1s0x6000e76009075ee5:0xeed4bda269c8a677,🤘 吃飯飯,
+Tokura Kyoto Sanjo,報資漢寶牌,https://www.google.com/maps/place/Tokura+Kyoto+Sanjo/data=!4m2!3m1!1s0x6001093841eddb13:0xe457df37e90ab058,🤘 吃飯飯,
+“Ekimae” kaisendon restaurant,Cp值很高的海鮮懂飯,https://www.google.com/maps/place/%E2%80%9CEkimae%E2%80%9D+kaisendon+restaurant/data=!4m2!3m1!1s0x6000e692c74250ad:0x7ea913318f048dee,🤘 吃飯飯,
+串炸 八重勝,,https://www.google.com/maps/place/%E4%B8%B2%E7%82%B8+%E5%85%AB%E9%87%8D%E5%8B%9D/data=!4m2!3m1!1s0x6000dd8ab619eebd:0x487dcc07ecb7e704,🤘 吃飯飯,
+Maita-ya,"大阪市區某個商店街的章魚燒,
+
+一顆3円而已,裡面都是日本人沒有觀光客,道 頓堀一份都要800~1000円。 
+還有24小時無人的服飾店,1000円-5000円,大衣 跟皮衣都只要3000円,太香了。",https://www.google.com/maps/place/Maita-ya/data=!4m2!3m1!1s0x6000e1cb1e5ed825:0xb4d889f9021e6b64,🤘 吃飯飯,
+串炸 天狗,人很多,https://www.google.com/maps/place/%E4%B8%B2%E7%82%B8+%E5%A4%A9%E7%8B%97/data=!4m2!3m1!1s0x6000dd8ab67eb929:0x48262d76de82d3c3,🤘 吃飯飯,
+新世界 かんかん,大阪味的章魚燒 中間糊糊的,https://www.google.com/maps/place/%E6%96%B0%E4%B8%96%E7%95%8C+%E3%81%8B%E3%82%93%E3%81%8B%E3%82%93/data=!4m2!3m1!1s0x6000e7600482136d:0x547be728d93fd887,🤘 吃飯飯,
+名代豬排,大推#大海老カツとヒレかつ(炸蝦&炸里脊套餐)、#濃口豬排醬+日式柚子醬,https://www.google.com/maps/place/%E5%90%8D%E4%BB%A3%E8%B1%AC%E6%8E%92/data=!4m2!3m1!1s0x600108924b00337d:0x1628dc527e3d4e0c,🤘 吃飯飯,
+Kiyasu Sohonpo,,https://www.google.com/maps/place/Kiyasu+Sohonpo/data=!4m2!3m1!1s0x6000e68d76465acb:0x432401df57759f8a,🤘 吃飯飯,
+Taishu Sukiyaki Hokuto GEMS Namba Branch,中午和牛1180,https://www.google.com/maps/place/Taishu+Sukiyaki+Hokuto+GEMS+Namba+Branch/data=!4m2!3m1!1s0x6000e78e88cf6963:0x13fe79ad645b20be,🤘 吃飯飯,
+Takoyakiza,,https://www.google.com/maps/place/Takoyakiza/data=!4m2!3m1!1s0x6000e70c0c0c3a51:0xf691e66fccd99861,🤘 吃飯飯,
+Achichi Honpo Dotonbori,,https://www.google.com/maps/place/Achichi+Honpo+Dotonbori/data=!4m2!3m1!1s0x6000e714f6c458d5:0x3e62c4440ae805e9,🤘 吃飯飯,
+難波八阪神社,,https://www.google.com/maps/place/%E9%9B%A3%E6%B3%A2%E5%85%AB%E9%98%AA%E7%A5%9E%E7%A4%BE/data=!4m2!3m1!1s0x6000e77279bd5541:0x80c374197554ea9f,🎃 景點,
+BATTEN YOKATO AMERIKAMURA,據說隨便點都不雷,https://www.google.com/maps/place/BATTEN+YOKATO+AMERIKAMURA/data=!4m2!3m1!1s0x6000e778508f87c3:0x12ff5ad43c5dbefd,🤘 吃飯飯,
+Takoyaki Wanaka Sennichimae,,https://www.google.com/maps/place/Takoyaki+Wanaka+Sennichimae/data=!4m2!3m1!1s0x6000e76b07f5de63:0xc68f6cb004cb8af6,🤘 吃飯飯,
+Sushi Ayase,午餐5500,https://www.google.com/maps/place/Sushi+Ayase/data=!4m2!3m1!1s0x6000e729f4eb569d:0x42f59d7b5a8f6734,🤘 吃飯飯,
+春日大社,,https://www.google.com/maps/place/%E6%98%A5%E6%97%A5%E5%A4%A7%E7%A4%BE/data=!4m2!3m1!1s0x600139c06bb06ad5:0x4c97e78382e39596,🎃 景點,
+Tōdai-ji,,https://www.google.com/maps/place/T%C5%8Ddai-ji/data=!4m2!3m1!1s0x600139907a0876dd:0xf890ac3f9dd53c8f,🎃 景點,
+奈良公園,,https://www.google.com/maps/place/%E5%A5%88%E8%89%AF%E5%85%AC%E5%9C%92/data=!4m2!3m1!1s0x60013996bd8c6061:0xf96cacf357447456,🎃 景點,
+宇治橋,,https://www.google.com/maps/place/%E5%AE%87%E6%B2%BB%E6%A9%8B/data=!4m2!3m1!1s0x6001110a5313ae9d:0x36bff55a841d0d8c,🎃 景點,
+宇治上神社,,https://www.google.com/maps/place/%E5%AE%87%E6%B2%BB%E4%B8%8A%E7%A5%9E%E7%A4%BE/data=!4m2!3m1!1s0x60011173757af961:0x11600ef0d3975f5f,🎃 景點,
+宇治神社 (兔子神社）,,https://www.google.com/maps/place/%E5%AE%87%E6%B2%BB%E7%A5%9E%E7%A4%BE+(%E5%85%94%E5%AD%90%E7%A5%9E%E7%A4%BE%EF%BC%89/data=!4m2!3m1!1s0x600111731014cfd9:0xe47629bd29c85f14,🎃 景點,
+建仁寺,,https://www.google.com/maps/place/%E5%BB%BA%E4%BB%81%E5%AF%BA/data=!4m2!3m1!1s0x600108c1242b7b27:0x7e608f1986c5bb52,🎃 景點,
+Kamo River,,https://www.google.com/maps/place/Kamo+River/data=!4m2!3m1!1s0x600108e457079b29:0x578668ecc6840c03,🎃 景點,
+Nonkiya,燉牛筋，關東煮,https://www.google.com/maps/place/Nonkiya/data=!4m2!3m1!1s0x6000dd8aad775aa9:0x9389f475ae07f98c,🤘 吃飯飯,
+Osaka Dojimahama Tower,免費看夜景的地方,https://www.google.com/maps/place/Osaka+Dojimahama+Tower/data=!4m2!3m1!1s0x6000e7002cc79d83:0x92846010eb670590,🎃 景點,
+清水寺,,https://www.google.com/maps/place/%E6%B8%85%E6%B0%B4%E5%AF%BA/data=!4m2!3m1!1s0x600108d385dcfb07:0x62af658650c434ba,🎃 景點,
+錦市場,,https://www.google.com/maps/place/%E9%8C%A6%E5%B8%82%E5%A0%B4/data=!4m2!3m1!1s0x6001089ccd8ccb4f:0xb69ea31001ec6c9c,🎃 景點,
+伏見稻荷大社,,https://www.google.com/maps/place/%E4%BC%8F%E8%A6%8B%E7%A8%BB%E8%8D%B7%E5%A4%A7%E7%A4%BE/data=!4m2!3m1!1s0x60010f153d2e6d21:0x7b1aca1c753ae2e9,🎃 景點,
+Sukiyaki Kimura,很道地的DIY壽喜燒,https://www.google.com/maps/place/Sukiyaki+Kimura/data=!4m2!3m1!1s0x60010894254122a3:0x84023cafa4c8c209,,
+`;
+
+			// === Weather ===
+			// 填上你的 WeatherAPI key 可啟用即時天氣。
+			const WEATHERAPI_KEY = ""; // TODO: "YOUR_KEY"
+			const WEATHER_PROVIDER = WEATHERAPI_KEY ? "weatherapi" : "mock";
+
+			const DAY_PRIMARY_CITY = {
+				"4/16": "京都",
+				"4/17": "京都",
+				"4/18": "京都",
+				"4/19": "京都",
+				"4/20": "大阪",
+				"4/21": "大阪",
+				"4/22": "大阪",
+			};
+
+			const MOCK_WEATHER = {
+				京都: {
+					icon: "⛅️",
+					hi: 22,
+					lo: 13,
+					rain: 25,
+					text: "多雲時晴",
+				},
+				大阪: {
+					icon: "🌤️",
+					hi: 24,
+					lo: 14,
+					rain: 20,
+					text: "晴到多雲",
+				},
+			};
+
+			async function getWeatherForCity(city) {
+				if (WEATHER_PROVIDER === "mock") {
+					return { ...MOCK_WEATHER[city], source: "WeatherAPI（示意）" };
+				}
+
+				// WeatherAPI: current + forecast (簡化：用當天預報)
+				// Docs: https://www.weatherapi.com/
+				const endpoint = new URL("https://api.weatherapi.com/v1/forecast.json");
+				endpoint.searchParams.set("key", WEATHERAPI_KEY);
+				endpoint.searchParams.set("q", city);
+				endpoint.searchParams.set("days", "1");
+				endpoint.searchParams.set("lang", "zh");
+
+				const res = await fetch(endpoint);
+				if (!res.ok) throw new Error("WeatherAPI request failed");
+				const data = await res.json();
+				const day = data?.forecast?.forecastday?.[0]?.day;
+				return {
+					icon: "🌦️",
+					hi: Math.round(day?.maxtemp_c ?? 0),
+					lo: Math.round(day?.mintemp_c ?? 0),
+					rain: Math.round(day?.daily_chance_of_rain ?? 0),
+					text: day?.condition?.text ?? "-",
+					source: "WeatherAPI",
+				};
+			}
+
+			// === Stories / Tips (50-100字左右) ===
+			const STORY = {
+				"伏見稻荷大社":
+					"以千本鳥居聞名的稻荷信仰總本社。清晨人少、光線柔和，拍照更乾淨；若體力允許可往上走一段，越往上越安靜。",
+				清水寺:
+					"清水舞台採懸空木構工法，是京都代表性景觀。音羽之瀧三道泉水寓意不同，習俗是擇一取用更靈驗；坡道區域石階多，建議穿好走的鞋。",
+				"宇治平等院":
+					"鳳凰堂是 10 圓硬幣上的經典圖案，池水倒影很吃光線與風；建議開門時段先入園，避開團客尖峰，逛起來更舒服。",
+				"奈良公園":
+					"鹿很親人也很會搶食。拿鹿仙貝時把包裝收好、手伸直給餅，別一次掏出一大把；被圍住就快步離開人群較少的區域。",
+				勝尾寺:
+					"以「勝運」達摩聞名，角落與階梯旁常有驚喜達摩牆。若想拍到人少的畫面，越早抵達越好；山上氣溫偏低，帶件薄外套更舒適。",
+				"大阪城天守閣":
+					"天守閣是大阪象徵，內部多為展覽動線，登高可俯瞰護城河與城市天際線。早上開門先上樓，通常排隊更短、視野也更清晰。",
+				"梅田空中庭園":
+					"露天圓形展望台是招牌，高空風大偏涼；日落前後是最佳時段，能同時收下黃昏與夜景，建議提前到現場避開尖峰排隊。",
+			};
+
+			// === CSV parser (supports quoted fields) ===
+			function parseCSV(csv) {
+				const rows = [];
+				let current = [];
+				let value = "";
+				let inQuotes = false;
+
+				for (let i = 0; i < csv.length; i++) {
+					const ch = csv[i];
+					const next = csv[i + 1];
+
+					if (ch === '"') {
+						if (inQuotes && next === '"') {
+							value += '"';
+							i++;
+							continue;
+						}
+						inQuotes = !inQuotes;
+						continue;
+					}
+
+					if (!inQuotes && ch === ",") {
+						current.push(value);
+						value = "";
+						continue;
+					}
+
+					if (!inQuotes && (ch === "\n" || ch === "\r")) {
+						if (ch === "\r" && next === "\n") i++;
+						current.push(value);
+						value = "";
+						if (current.some((cell) => cell.trim() !== "")) rows.push(current);
+						current = [];
+						continue;
+					}
+
+					value += ch;
+				}
+
+				if (value.length > 0 || current.length > 0) {
+					current.push(value);
+					if (current.some((cell) => cell.trim() !== "")) rows.push(current);
+				}
+
+				const headers = rows.shift().map((h) => h.trim());
+				return rows.map((r) => {
+					const obj = {};
+					headers.forEach((h, idx) => {
+						obj[h] = (r[idx] ?? "").trim();
+					});
+					return obj;
+				});
+			}
+
+			function parseMonthDay(md) {
+				const [m, d] = md.split("/").map((x) => Number(x));
+				// 2026
+				return new Date(2026, m - 1, d);
+			}
+
+			function weekdayShort(date) {
+				return new Intl.DateTimeFormat("zh-TW", { weekday: "short" }).format(date);
+			}
+
+			function formatDayTitle(md, dayIndex) {
+				const dt = parseMonthDay(md);
+				return `${md} (${weekdayShort(dt)}) | Day ${dayIndex}`;
+			}
+
+			function normalizeType(type) {
+				const t = type.trim();
+				if (t === "景點") return { cls: "sight", label: "📍 景點" };
+				if (t === "餐廳") return { cls: "food", label: "🍴 餐廳" };
+				if (t === "交通") return { cls: "transit", label: "🚆 交通" };
+				if (t === "住宿") return { cls: "stay", label: "🏨 住宿" };
+				if (t === "購物") return { cls: "shop", label: "🛍️ 購物" };
+				return { cls: "other", label: `• ${t || "其他"}` };
+			}
+
+			function escapeHtml(s) {
+				return String(s)
+					.replaceAll("&", "&amp;")
+					.replaceAll("<", "&lt;")
+					.replaceAll(">", "&gt;")
+					.replaceAll('"', "&quot;");
+			}
+
+			function normalizeFoodTag(raw) {
+				const t = String(raw || "").trim();
+				if (t.includes("🏨")) return { key: "stay", cls: "stay", label: "🏨 住宿" };
+				if (t.includes("🤘") || t.includes("吃飯飯")) return { key: "food", cls: "food", label: "🍴 吃飯飯" };
+				if (t.includes("🎃") || t.includes("景點")) return { key: "sight", cls: "sight", label: "📍 景點" };
+				return { key: "other", cls: "other", label: "• 其他" };
+			}
+
+			function normalizeFoodItem(obj) {
+				const title = String(obj["標題"] || "").trim();
+				const note = String(obj["筆記"] || "").trim();
+				const url = String(obj["網址"] || "").trim();
+				const tagRaw = String(obj["標籤"] || "").trim();
+				const comment = String(obj["留言"] || "").trim();
+				return { title, note, url, tagRaw, comment };
+			}
+
+			const FOOD_PLACES = ["京都", "大阪", "宇治", "奈良"];
+			const FOOD_PLACE_KEY = "kansai_food_place_v1";
+			let FOOD_PLACE_SELECTED = "京都";
+
+			function inferFoodPlace(it) {
+				const text = `${it.title || ""} ${it.note || ""} ${it.url || ""}`.toLowerCase();
+				if (text.includes("宇治") || text.includes("uji")) return "宇治";
+				if (
+					text.includes("奈良") ||
+					text.includes("nara") ||
+					text.includes("春日") ||
+					text.includes("東大寺") ||
+					text.includes("todai") ||
+					text.includes("tōdai")
+				)
+					return "奈良";
+				if (
+					text.includes("大阪") ||
+					text.includes("osaka") ||
+					text.includes("難波") ||
+					text.includes("namba") ||
+					text.includes("心齋橋") ||
+					text.includes("shinsaibashi") ||
+					text.includes("道頓堀") ||
+					text.includes("dotonbori") ||
+					text.includes("新世界") ||
+					text.includes("shinsekai") ||
+					text.includes("梅田") ||
+					text.includes("umeda") ||
+					text.includes("amerikamura")
+				)
+					return "大阪";
+				if (
+					text.includes("京都") ||
+					text.includes("kyoto") ||
+					text.includes("嵐山") ||
+					text.includes("arashiyama") ||
+					text.includes("四條") ||
+					text.includes("shijo") ||
+					text.includes("清水") ||
+					text.includes("伏見") ||
+					text.includes("錦")
+				)
+					return "京都";
+				return "京都";
+			}
+
+			function loadFoodPlaceDefault() {
+				const saved = localStorage.getItem(FOOD_PLACE_KEY);
+				if (saved && FOOD_PLACES.includes(saved)) return saved;
+				return "京都";
+			}
+
+			function setFoodPlace(place) {
+				if (!FOOD_PLACES.includes(place)) return;
+				FOOD_PLACE_SELECTED = place;
+				localStorage.setItem(FOOD_PLACE_KEY, place);
+				renderFoodPlaceTabs(place);
+				renderFood(FOOD_ITEMS_CACHE, place);
+			}
+
+			function renderFoodPlaceTabs(selectedPlace) {
+				const tabs = document.getElementById("foodPlaceTabs");
+				if (!tabs) return;
+				tabs.innerHTML = "";
+				FOOD_PLACES.forEach((place) => {
+					const btn = document.createElement("button");
+					btn.type = "button";
+					btn.className = "day-tab";
+					btn.setAttribute("role", "tab");
+					btn.setAttribute("data-place", place);
+					btn.setAttribute("aria-selected", place === selectedPlace ? "true" : "false");
+					btn.textContent = `📍${place}`;
+					btn.addEventListener("click", () => setFoodPlace(place));
+					tabs.appendChild(btn);
+				});
+			}
+
+			function dedupeFoodItems(items) {
+				const byKey = new Map();
+				for (const it of items) {
+					const titleKey = it.title
+						.normalize("NFKC")
+						.replaceAll(/[\s\u3000]+/g, " ")
+						.trim()
+						.toLowerCase();
+					const urlKey = (it.url || "").trim().toLowerCase();
+					const key = titleKey || urlKey;
+					if (!key) continue;
+					const normalized = { ...it, _key: key };
+
+					if (!byKey.has(key)) {
+						byKey.set(key, normalized);
+						continue;
+					}
+
+					const prev = byKey.get(key);
+					// Merge: keep the most informative fields.
+					prev.url = prev.url || normalized.url;
+					prev.tagRaw = prev.tagRaw || normalized.tagRaw;
+					prev.comment = prev.comment || normalized.comment;
+					if ((normalized.note || "").length > (prev.note || "").length) prev.note = normalized.note;
+					byKey.set(key, prev);
+				}
+				return Array.from(byKey.values());
+			}
+
+			const FOOD_PINNED_KEY = "kansai_food_pinned_v1";
+			let FOOD_PINNED_CACHE = {};
+			const FOOD_PINNED_ORDER_KEY = "kansai_food_pinned_order_v1";
+			let FOOD_PINNED_ORDER_CACHE = {};
+
+			function loadFoodPinned() {
+				try {
+					const raw = localStorage.getItem(FOOD_PINNED_KEY);
+					if (!raw) return {};
+					const parsed = JSON.parse(raw);
+					return parsed && typeof parsed === "object" ? parsed : {};
+				} catch {
+					return {};
+				}
+			}
+
+			function saveFoodPinned(pinned) {
+				localStorage.setItem(FOOD_PINNED_KEY, JSON.stringify(pinned || {}));
+			}
+
+			function loadFoodPinnedOrder() {
+				try {
+					const raw = localStorage.getItem(FOOD_PINNED_ORDER_KEY);
+					if (!raw) return {};
+					const parsed = JSON.parse(raw);
+					return parsed && typeof parsed === "object" ? parsed : {};
+				} catch {
+					return {};
+				}
+			}
+
+			function saveFoodPinnedOrder(orderByPlace) {
+				localStorage.setItem(FOOD_PINNED_ORDER_KEY, JSON.stringify(orderByPlace || {}));
+			}
+
+			function getPinnedOrderForPlace(place) {
+				const arr = FOOD_PINNED_ORDER_CACHE?.[place];
+				return Array.isArray(arr) ? arr.filter((x) => typeof x === "string") : [];
+			}
+
+			function setPinnedOrderForPlace(place, order) {
+				if (!FOOD_PLACES.includes(place)) return;
+				FOOD_PINNED_ORDER_CACHE[place] = (order || []).filter((x) => typeof x === "string");
+				saveFoodPinnedOrder(FOOD_PINNED_ORDER_CACHE);
+			}
+
+			function isFoodPinned(key) {
+				return !!(key && FOOD_PINNED_CACHE && FOOD_PINNED_CACHE[key]);
+			}
+
+			function toggleFoodPinned(key) {
+				if (!key) return;
+				if (isFoodPinned(key)) delete FOOD_PINNED_CACHE[key];
+				else FOOD_PINNED_CACHE[key] = true;
+				saveFoodPinned(FOOD_PINNED_CACHE);
+			}
+
+			function wireFoodPinned() {
+				const root = document.getElementById("foodRoot");
+				if (!root) return;
+				root.addEventListener("click", (e) => {
+					const btn = e.target.closest("button[data-pin]");
+					if (!btn) return;
+					const key = btn.getAttribute("data-pin") || "";
+					toggleFoodPinned(key);
+					renderFood(FOOD_ITEMS_CACHE, FOOD_PLACE_SELECTED);
+				});
+			}
+
+			function wirePinnedSort() {
+		

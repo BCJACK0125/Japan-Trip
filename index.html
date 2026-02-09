@@ -1,167 +1,268 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light" />
     <title>博謙薪慈日本之旅 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800;900&family=Noto+Sans+JP:wght@600;800&family=Kaisei+Tokumin:wght@700&display=swap" rel="stylesheet" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@900&display=swap');
-
         :root {
-            --bg-image: url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=2000&q=80');
+            --ink: #0b1d1c;
+            --bg: #f5f5f5;
+            --primary: #2f4f4f;
+            --accent: #ff6b6b;
+            --sakura-pink: #ffb6c1;
         }
 
-        body, html {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            background-color: #000;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        * { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; overflow: hidden; background: var(--bg); }
+
+        body {
+            font-family: Inter, "Noto Sans JP", sans-serif;
+            color: var(--ink);
         }
 
-        /* 鏡頭背景：京都古城 */
-        .scenery {
-            position: absolute;
-            width: 110%; height: 110%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.3)), var(--bg-image);
-            background-size: cover;
-            background-position: center;
-            filter: blur(2px) brightness(0.7);
-            animation: zoomOut 10s ease-out forwards;
+        /* 舞台與場景設定 */
+        .stage {
+            min-height: 100svh;
+            display: grid;
+            place-items: center;
+            padding: 18px;
         }
 
-        /* 情侶容器：處理縮小與位移 */
-        .couple-wrapper {
-            position: absolute;
-            bottom: -10%; /* 從螢幕下方外面開始 */
-            z-index: 5;
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            animation: walkToDistance 6s ease-in-out forwards;
-        }
-
-        /* 模擬情侶 (你可以換成 png 去背圖) */
-        .couple-sprite {
-            width: 180px;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
-        }
-
-        /* 最終標題：博謙薪慈日本之旅 */
-        .final-title {
+        .scene {
             position: relative;
-            z-index: 10;
-            text-align: center;
-            color: #fff;
-            opacity: 0;
-            transform: scale(0.9);
-            animation: titleReveal 3s ease-out 5s forwards; /* 5秒後出現 */
+            width: min(520px, 100%);
+            aspect-ratio: 9 / 16;
+            border-radius: 24px;
+            overflow: hidden;
+            background: 
+                linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(245, 245, 245, 0.92) 55%, rgba(232, 238, 238, 1) 100%),
+                radial-gradient(1200px 700px at 50% -20%, rgba(47, 79, 79, 0.22) 0%, rgba(47, 79, 79, 0) 60%);
+            border: 1px solid rgba(47, 79, 79, 0.14);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.1);
         }
 
-        .final-title h1 {
-            font-family: 'Noto Serif JP', serif;
-            font-size: 3.5rem;
-            letter-spacing: 0.5rem;
-            text-shadow: 0 0 30px rgba(0,0,0,1), 0 0 10px rgba(255,255,255,0.5);
-            margin: 0;
-        }
+        .layer { position: absolute; inset: 0; }
 
-        /* --- 動畫細節 --- */
-
-        /* 背景微動漫感 */
-        @keyframes zoomOut {
-            from { transform: scale(1.1); }
-            to { transform: scale(1); filter: blur(0px) brightness(0.8); }
-        }
-
-        /* 情侶走向遠方並淡出 */
-        @keyframes walkToDistance {
-            0% {
-                transform: translateY(0) scale(1.2);
-                opacity: 0;
-            }
-            20% {
-                opacity: 1;
-            }
-            80% {
-                opacity: 0.6;
-            }
-            100% {
-                transform: translateY(-40vh) scale(0.4); /* 往上移動並變小 */
-                opacity: 0;
-                filter: blur(5px);
-            }
-        }
-
-        /* 標題彈出 */
-        @keyframes titleReveal {
-            0% { opacity: 0; transform: scale(0.8); filter: blur(10px); }
-            50% { opacity: 1; filter: blur(2px); }
-            100% { opacity: 1; transform: scale(1); filter: blur(0px); }
-        }
-
-        /* 櫻花飄落特效 */
-        .sakura {
+        /* --- 1. 櫻花特效 --- */
+        .sakura { pointer-events: none; }
+        .petal {
             position: absolute;
-            background: #ffe1e9;
-            border-radius: 100% 0 100% 0;
-            opacity: 0.6;
-            pointer-events: none;
-            animation: sakuraFall linear infinite;
+            top: -12%;
+            width: var(--size, 14px);
+            height: var(--size, 14px);
+            opacity: var(--o, 0.6);
+            animation: petalFall var(--d, 8s) linear var(--delay, 0s) infinite;
         }
-        @keyframes sakuraFall {
-            0% { transform: translate(0, -10%) rotate(0deg); }
-            100% { transform: translate(100px, 110vh) rotate(360deg); }
+        .petal::before {
+            content: ""; display: block; width: 100%; height: 100%;
+            border-radius: 18px 0 18px 18px;
+            background: radial-gradient(circle at 32% 32%, #fff, rgba(255,182,193,0.9));
+            transform: rotate(18deg);
+        }
+        @keyframes petalFall {
+            0% { transform: translate3d(0, -20%, 0) rotate(0deg); }
+            100% { transform: translate3d(var(--sway, 40px), 120vh, 0) rotate(var(--spin, 260deg)); }
         }
 
-        .enter-btn {
-            margin-top: 2rem;
-            padding: 10px 40px;
-            border: 1px solid rgba(255,255,255,0.6);
-            background: rgba(255,255,255,0.1);
-            color: white;
-            cursor: pointer;
-            border-radius: 30px;
-            font-size: 1rem;
-            transition: 0.3s;
-            text-decoration: none;
-            display: inline-block;
+        /* --- 2. 情侶前行與溶入動畫 --- */
+        .coupleWrap {
+            display: grid;
+            place-items: end center;
+            padding-bottom: 52px;
+            transform-origin: 50% 100%;
+            animation: 
+                coupleWalkAway 4.5s ease-in-out 0.15s forwards, 
+                coupleDissolve 1.5s ease-out 3.2s forwards;
         }
-        .enter-btn:hover { background: white; color: black; }
+
+        @keyframes coupleWalkAway {
+            0% { transform: translateY(72px) scale(1.05); filter: blur(0px); }
+            100% { transform: translateY(-30px) scale(0.7); filter: blur(0.5px); }
+        }
+
+        @keyframes coupleDissolve {
+            0% { opacity: 1; filter: blur(0.5px) saturate(1); }
+            100% { opacity: 0; filter: blur(10px) saturate(0); }
+        }
+
+        /* --- 3. 京都古城浮現 --- */
+        .kyotoWrap {
+            display: grid;
+            place-items: end center;
+            padding-bottom: 130px;
+            opacity: 0;
+            animation: kyotoFadeIn 3s ease-out 3s forwards;
+        }
+
+        @keyframes kyotoFadeIn {
+            0% { opacity: 0; transform: translateY(15px); filter: blur(5px); }
+            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        /* --- 4. 標題與墨跡動畫 --- */
+        .titleWrap {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            padding: 22px;
+            opacity: 0;
+            animation: titleEntrance 1.8s cubic-bezier(0.18, 0.9, 0.2, 1) 5.2s forwards;
+        }
+
+        @keyframes titleEntrance {
+            0% { opacity: 0; transform: translateY(20px) scale(0.9); filter: blur(15px); }
+            100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        .titleCard {
+            width: 100%;
+            border-radius: 20px;
+            padding: 24px 16px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(47, 79, 79, 0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            text-align: center;
+            transform: translateY(-120px);
+        }
+
+        /* 墨跡暈染效果 */
+        .titleCard::after {
+            content: ""; position: absolute; inset: -40px;
+            background: radial-gradient(circle, rgba(47,79,79,0.15) 0%, transparent 70%);
+            opacity: 0;
+            animation: inkBloom 2.5s ease-out 5s forwards;
+            z-index: -1;
+        }
+
+        @keyframes inkBloom {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; transform: scale(1.2); }
+        }
+
+        .titleCard h1 {
+            margin: 0;
+            font-family: "Kaisei Tokumin", serif;
+            font-size: clamp(50px, 10vw, 72px);
+            line-height: 1.1;
+            color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #4a6d6d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .titleCard .sub {
+            margin: 12px 0;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.2em;
+            color: rgba(47, 79, 79, 0.6);
+        }
+
+        /* 按鈕引導 */
+        .enterBtn {
+            display: inline-flex;
+            margin-top: 15px;
+            padding: 12px 28px;
+            border-radius: 999px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(47, 79, 79, 0.3);
+            animation: btnBreath 2s infinite 7s;
+        }
+
+        @keyframes btnBreath {
+            0% { transform: scale(1); box-shadow: 0 4px 15px rgba(47, 79, 79, 0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(47, 79, 79, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 4px 15px rgba(47, 79, 79, 0.3); }
+        }
     </style>
 </head>
 <body>
+    <div class="stage">
+        <div class="scene">
+            <div class="layer sakura" id="sakuraLayer"></div>
+            
+            <div class="layer" style="background: radial-gradient(circle at 50% 100%, rgba(47,79,79,0.05) 0%, transparent 70%);"></div>
 
-    <div class="scenery"></div>
+            <div class="layer coupleWrap">
+                <svg width="280" height="280" viewBox="0 0 360 360">
+                    <defs>
+                        <linearGradient id="coupleGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#2f4f4f" />
+                            <stop offset="1" stop-color="#1a2e2e" />
+                        </linearGradient>
+                    </defs>
+                    <g opacity="0.9">
+                        <circle cx="155" cy="170" r="18" fill="url(#coupleGrad)" />
+                        <path d="M130 195 C120 210, 118 230, 120 255 C125 300, 140 315, 155 315 C170 315, 185 300, 188 255 C190 230, 185 210, 175 195 Z" fill="url(#coupleGrad)" />
+                        <circle cx="205" cy="172" r="17" fill="url(#coupleGrad)" />
+                        <path d="M185 195 C180 210, 178 230, 180 255 C185 300, 200 315, 215 315 C230 315, 245 300, 248 255 C250 230, 245 210, 235 195 Z" fill="url(#coupleGrad)" />
+                        <path d="M175 230 Q180 240, 185 230" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" />
+                        <path d="M180 135 C175 125, 165 125, 165 135 C165 150, 180 160, 180 160 C180 160, 195 150, 195 135 C195 125, 185 125, 180 135 Z" fill="var(--accent)" opacity="0.8" />
+                    </g>
+                </svg>
+            </div>
 
-    <div class="couple-wrapper">
-        <svg class="couple-sprite" viewBox="0 0 200 200" fill="white">
-            <path d="M60 180 Q60 100 80 80 Q90 70 100 80 Q110 70 120 80 Q140 100 140 180" />
-            <circle cx="85" cy="60" r="15" />
-            <circle cx="115" cy="60" r="14" />
-        </svg>
-    </div>
+            <div class="layer kyotoWrap">
+                <svg width="400" height="300" viewBox="0 0 460 300">
+                    <g fill="var(--primary)" opacity="0.8">
+                        <rect x="215" y="80" width="30" height="180" rx="4" />
+                        <path d="M180 100 L230 70 L280 100 L280 115 L180 115 Z" />
+                        <path d="M190 140 L230 115 L270 140 L270 155 L190 155 Z" />
+                        <path d="M200 180 L230 160 L260 180 L260 195 L200 195 Z" />
+                        <path d="M30 250 L80 220 L130 250 L130 290 L30 290 Z" />
+                        <path d="M330 250 L380 220 L430 250 L430 290 L330 290 Z" />
+                    </g>
+                </svg>
+            </div>
 
-    <div class="final-title">
-        <h1>博謙薪慈<br>日本之旅</h1>
-        <p style="font-size: 1.2rem; letter-spacing: 0.2rem; margin-top: 10px;">Kansai 2026</p>
-        <a href="kyoto.html" class="enter-btn">查看行程導航</a>
+            <div class="titleWrap">
+                <div class="titleCard">
+                    <div class="sub">SPRING 2026</div>
+                    <h1>博謙薪慈<br>日本之旅</h1>
+                    <div class="sub" style="font-size: 11px;">京阪神．浪漫冒險</div>
+                    <a class="enterBtn" href="./itinerary.html">開啟行程手冊</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // 生成櫻花瓣
-        for (let i = 0; i < 30; i++) {
-            let s = document.createElement('div');
-            s.className = 'sakura';
-            s.style.width = Math.random() * 10 + 5 + 'px';
-            s.style.height = s.style.width;
-            s.style.left = Math.random() * 100 + 'vw';
-            s.style.animationDuration = Math.random() * 5 + 5 + 's';
-            s.style.animationDelay = Math.random() * 5 + 's';
-            document.body.appendChild(s);
-        }
+        // 動態生成櫻花瓣
+        (function initSakura() {
+            const container = document.getElementById('sakuraLayer');
+            const petalCount = 20;
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('i');
+                petal.className = 'petal';
+                const left = Math.random() * 100;
+                const size = 10 + Math.random() * 10;
+                const duration = 6 + Math.random() * 6;
+                const delay = -Math.random() * 10;
+                const sway = (Math.random() - 0.5) * 80;
+                const spin = Math.random() * 360;
+
+                petal.style.left = left + '%';
+                petal.style.setProperty('--size', size + 'px');
+                petal.style.setProperty('--d', duration + 's');
+                petal.style.setProperty('--delay', delay + 's');
+                petal.style.setProperty('--sway', sway + 'px');
+                petal.style.setProperty('--spin', spin + 'deg');
+                petal.style.setProperty('--o', 0.4 + Math.random() * 0.4);
+                container.appendChild(petal);
+            }
+        })();
     </script>
 </body>
 </html>

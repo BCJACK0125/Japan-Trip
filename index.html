@@ -17,6 +17,7 @@
 				--bg: #f5f5f5;
 				--primary: #2f4f4f;
 				--accent: #ff6b6b;
+				--sakura: #ffb7c5;
 			}
 
 			* {
@@ -72,8 +73,10 @@
 				top: -12%;
 				width: var(--size, 14px);
 				height: var(--size, 14px);
-				opacity: var(--o, 0.6);
-				filter: blur(0.15px);
+				opacity: var(--o, 0.7);
+				background-color: var(--sakura);
+				border-radius: 100% 0 100% 0;
+				filter: blur(0.2px);
 				will-change: transform;
 				transform: translate3d(0, -20%, 0) rotate(0deg);
 				animation: petalFall var(--d, 8s) linear var(--delay, 0s) infinite;
@@ -84,19 +87,19 @@
 				display: block;
 				width: 100%;
 				height: 100%;
-				border-radius: 18px 18px 18px 18px;
+				border-radius: 100% 0 100% 0;
 				background:
-					radial-gradient(circle at 32% 32%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 42%),
-					radial-gradient(circle at 52% 48%, rgba(255, 182, 193, 0.95), rgba(255, 182, 193, 0.30) 58%, rgba(255, 182, 193, 0) 78%);
+					radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 46%),
+					radial-gradient(circle at 56% 52%, rgba(255, 183, 197, 0.95), rgba(255, 183, 197, 0.22) 62%, rgba(255, 183, 197, 0) 80%);
 				transform: rotate(18deg);
 			}
 
 			@keyframes petalFall {
 				0% {
-					transform: translate3d(0, -20%, 0) rotate(0deg);
+					transform: translate3d(0, -15vh, 0) rotate(0deg);
 				}
 				100% {
-					transform: translate3d(var(--sway, 40px), 120%, 0) rotate(var(--spin, 260deg));
+					transform: translate3d(var(--sway, 40px), 110vh, 0) rotate(360deg);
 				}
 			}
 
@@ -141,9 +144,14 @@
 			@keyframes coupleFade {
 				0% {
 					opacity: 1;
+					filter: blur(0.35px) saturate(1);
+				}
+				50% {
+					filter: blur(2px) saturate(0.5);
 				}
 				100% {
 					opacity: 0;
+					filter: blur(8px) saturate(0);
 				}
 			}
 
@@ -258,6 +266,17 @@
 				line-height: 1;
 				font-weight: 700;
 				color: var(--primary);
+				text-shadow: 0 0 15px rgba(255, 107, 107, 0.10);
+			}
+
+			@supports (-webkit-background-clip: text) {
+				.titleCard h1 {
+					background: linear-gradient(135deg, var(--primary) 0%, rgba(47, 79, 79, 0.85) 100%);
+					-webkit-background-clip: text;
+					background-clip: text;
+					color: transparent;
+					-webkit-text-fill-color: transparent;
+				}
 			}
 
 			.titleCard h1 .t1,
@@ -279,6 +298,19 @@
 				text-decoration: none;
 				font-weight: 900;
 				letter-spacing: 0.06em;
+				animation: btnPulse 2s infinite 6.5s;
+			}
+
+			@keyframes btnPulse {
+				0% {
+					box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.40);
+				}
+				70% {
+					box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+				}
+				100% {
+					box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+				}
 			}
 
 			.enterBtn:focus-visible {
@@ -350,6 +382,9 @@
 				}
 				.titleCard::before {
 					display: none;
+				}
+				.enterBtn {
+					animation: none !important;
 				}
 			}
 		</style>
@@ -454,27 +489,33 @@
 				if (!layer) return;
 				if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-				const count = 26;
-				for (let i = 0; i < count; i++) {
+				const maxPetals = 60;
+				function createSakura() {
 					const el = document.createElement("i");
 					el.className = "petal";
 					const left = Math.random() * 100;
-					const size = 9 + Math.random() * 14;
-					const duration = 6.5 + Math.random() * 7.5;
-					const delay = -Math.random() * 10;
-					const sway = (Math.random() * 2 - 1) * 70;
-					const spin = (Math.random() * 2 - 1) * (220 + Math.random() * 220);
-					const opacity = 0.35 + Math.random() * 0.45;
+					const size = 5 + Math.random() * 10;
+					const duration = 4 + Math.random() * 3.5;
+					const sway = (Math.random() * 2 - 1) * 100;
+					const opacity = 0.25 + Math.random() * 0.6;
 
 					el.style.left = `${left}%`;
 					el.style.setProperty("--size", `${size.toFixed(1)}px`);
 					el.style.setProperty("--d", `${duration.toFixed(2)}s`);
-					el.style.setProperty("--delay", `${delay.toFixed(2)}s`);
-					el.style.setProperty("--sway", `${sway.toFixed(1)}px`);
-					el.style.setProperty("--spin", `${spin.toFixed(0)}deg`);
+					el.style.setProperty("--delay", `0s`);
+					el.style.setProperty("--sway", `${sway.toFixed(0)}px`);
 					el.style.setProperty("--o", `${opacity.toFixed(2)}`);
 					layer.appendChild(el);
+
+					while (layer.childElementCount > maxPetals) {
+						layer.firstElementChild?.remove();
+					}
+
+					window.setTimeout(() => el.remove(), (duration + 1.0) * 1000);
 				}
+
+				for (let i = 0; i < 18; i++) createSakura();
+				window.setInterval(createSakura, 300);
 			})();
 		</script>
 	</body>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博謙薪慈日本之旅 2026</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@900&display=swap');
+
+        :root {
+            --bg-image: url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=2000&q=80');
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 鏡頭背景：京都古城 */
+        .scenery {
+            position: absolute;
+            width: 110%; height: 110%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.3)), var(--bg-image);
+            background-size: cover;
+            background-position: center;
+            filter: blur(2px) brightness(0.7);
+            animation: zoomOut 10s ease-out forwards;
+        }
+
+        /* 情侶容器：處理縮小與位移 */
+        .couple-wrapper {
+            position: absolute;
+            bottom: -10%; /* 從螢幕下方外面開始 */
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            animation: walkToDistance 6s ease-in-out forwards;
+        }
+
+        /* 模擬情侶 (你可以換成 png 去背圖) */
+        .couple-sprite {
+            width: 180px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+        }
+
+        /* 最終標題：博謙薪慈日本之旅 */
+        .final-title {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            color: #fff;
+            opacity: 0;
+            transform: scale(0.9);
+            animation: titleReveal 3s ease-out 5s forwards; /* 5秒後出現 */
+        }
+
+        .final-title h1 {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 3.5rem;
+            letter-spacing: 0.5rem;
+            text-shadow: 0 0 30px rgba(0,0,0,1), 0 0 10px rgba(255,255,255,0.5);
+            margin: 0;
+        }
+
+        /* --- 動畫細節 --- */
+
+        /* 背景微動漫感 */
+        @keyframes zoomOut {
+            from { transform: scale(1.1); }
+            to { transform: scale(1); filter: blur(0px) brightness(0.8); }
+        }
+
+        /* 情侶走向遠方並淡出 */
+        @keyframes walkToDistance {
+            0% {
+                transform: translateY(0) scale(1.2);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-40vh) scale(0.4); /* 往上移動並變小 */
+                opacity: 0;
+                filter: blur(5px);
+            }
+        }
+
+        /* 標題彈出 */
+        @keyframes titleReveal {
+            0% { opacity: 0; transform: scale(0.8); filter: blur(10px); }
+            50% { opacity: 1; filter: blur(2px); }
+            100% { opacity: 1; transform: scale(1); filter: blur(0px); }
+        }
+
+        /* 櫻花飄落特效 */
+        .sakura {
+            position: absolute;
+            background: #ffe1e9;
+            border-radius: 100% 0 100% 0;
+            opacity: 0.6;
+            pointer-events: none;
+            animation: sakuraFall linear infinite;
+        }
+        @keyframes sakuraFall {
+            0% { transform: translate(0, -10%) rotate(0deg); }
+            100% { transform: translate(100px, 110vh) rotate(360deg); }
+        }
+
+        .enter-btn {
+            margin-top: 2rem;
+            padding: 10px 40px;
+            border: 1px solid rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            cursor: pointer;
+            border-radius: 30px;
+            font-size: 1rem;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .enter-btn:hover { background: white; color: black; }
+    </style>
+</head>
+<body>
+
+    <div class="scenery"></div>
+
+    <div class="couple-wrapper">
+        <svg class="couple-sprite" viewBox="0 0 200 200" fill="white">
+            <path d="M60 180 Q60 100 80 80 Q90 70 100 80 Q110 70 120 80 Q140 100 140 180" />
+            <circle cx="85" cy="60" r="15" />
+            <circle cx="115" cy="60" r="14" />
+        </svg>
+    </div>
+
+    <div class="final-title">
+        <h1>博謙薪慈<br>日本之旅</h1>
+        <p style="font-size: 1.2rem; letter-spacing: 0.2rem; margin-top: 10px;">Kansai 2026</p>
+        <a href="itinerary.html" class="enter-btn">查看行程導航</a>
+    </div>
+
+    <script>
+        // 生成櫻花瓣
+        for (let i = 0; i < 30; i++) {
+            let s = document.createElement('div');
+            s.className = 'sakura';
+            s.style.width = Math.random() * 10 + 5 + 'px';
+            s.style.height = s.style.width;
+            s.style.left = Math.random() * 100 + 'vw';
+            s.style.animationDuration = Math.random() * 5 + 5 + 's';
+            s.style.animationDelay = Math.random() * 5 + 's';
+            document.body.appendChild(s);
+        }
+    </script>
+</body>
+</html>

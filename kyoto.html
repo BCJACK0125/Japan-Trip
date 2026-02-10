@@ -1,3 +1,38 @@
+已開啟會話群組。共 4 封郵件。1 封未讀取郵件。
+
+移至內容
+透過螢幕閱讀器使用 Gmail
+第 1 個，共 1,135 個
+Test Email with CSV Attachment
+收件匣
+
+CrawlerReport@dev
+附件
+下午1:01 (8 小時前)
+Hello! Please find the attached CSV report.
+
+CrawlerReport@dev
+附件
+下午1:01 (8 小時前)
+Hello! Please find the attached CSV report.
+
+CrawlerReport@dev <noreply-dev@esb13.cloud>
+附件
+下午2:22 (7 小時前)
+寄給 我
+
+這封郵件似乎是以英文撰寫而成
+ 1 個附件
+  •  已通過 Gmail 掃描檢查
+
+CrawlerReport@dev <noreply-dev@esb13.cloud>
+附件
+下午5:58 (3 小時前)
+寄給 我
+
+這封郵件似乎是以英文撰寫而成
+ 1 個附件
+  •  已通過 Gmail 掃描檢查
 <!doctype html>
 <html lang="zh-Hant">
 	<head>
@@ -418,6 +453,33 @@
 				padding: 12px;
 			}
 
+			.hotel-box {
+				border: 1px solid var(--line);
+				border-radius: 16px;
+				padding: 12px;
+				margin-top: 10px;
+			}
+
+			.hotel-box .hotel-name {
+				font-size: 14px;
+				font-weight: 950;
+				margin: 0;
+			}
+
+			.hotel-box .hotel-stay {
+				margin-top: 4px;
+				font-size: 12px;
+				color: var(--muted);
+				font-weight: 800;
+			}
+
+			.hotel-fields {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 10px;
+				margin-top: 10px;
+			}
+
 			.tool-card .small {
 				font-size: 12px;
 				color: var(--muted);
@@ -726,7 +788,7 @@ Tokura Kyoto Sanjo,報資漢寶牌,https://www.google.com/maps/place/Tokura+Kyot
 串炸 八重勝,,https://www.google.com/maps/place/%E4%B8%B2%E7%82%B8+%E5%85%AB%E9%87%8D%E5%8B%9D/data=!4m2!3m1!1s0x6000dd8ab619eebd:0x487dcc07ecb7e704,🤘 吃飯飯,
 Maita-ya,"大阪市區某個商店街的章魚燒,
 
-一顆3円而已,裡面都是日本人沒有觀光客,道 頓堀一份都要800~1000円。 
+一顆3円而已,裡面都是日本人沒有觀光客,道 頓堀一份都要800~1000円。 
 還有24小時無人的服飾店,1000円-5000円,大衣 跟皮衣都只要3000円,太香了。",https://www.google.com/maps/place/Maita-ya/data=!4m2!3m1!1s0x6000e1cb1e5ed825:0xb4d889f9021e6b64,🤘 吃飯飯,
 串炸 天狗,人很多,https://www.google.com/maps/place/%E4%B8%B2%E7%82%B8+%E5%A4%A9%E7%8B%97/data=!4m2!3m1!1s0x6000dd8ab67eb929:0x48262d76de82d3c3,🤘 吃飯飯,
 新世界 かんかん,大阪味的章魚燒 中間糊糊的,https://www.google.com/maps/place/%E6%96%B0%E4%B8%96%E7%95%8C+%E3%81%8B%E3%82%93%E3%81%8B%E3%82%93/data=!4m2!3m1!1s0x6000e7600482136d:0x547be728d93fd887,🤘 吃飯飯,
@@ -1113,4 +1175,1044 @@ Sukiyaki Kimura,很道地的DIY壽喜燒,https://www.google.com/maps/place/Sukiy
 			}
 
 			function wirePinnedSort() {
-		
+				const root = document.getElementById("foodRoot");
+				if (!root) return;
+
+				let draggingKey = "";
+				let touchDraggingEl = null;
+				let touchPlace = "";
+
+				const getPinnedList = () => document.getElementById("foodPinnedList");
+				const saveOrderFromDom = (place) => {
+					const list = getPinnedList();
+					if (!list) return;
+					const keys = Array.from(list.querySelectorAll(".card[data-pin-key]"))
+						.map((el) => el.getAttribute("data-pin-key") || "")
+						.filter(Boolean);
+					setPinnedOrderForPlace(place, keys);
+				};
+
+				const reorderByPointer = (list, draggedEl, overEl, clientY) => {
+					if (!list || !draggedEl || !overEl || draggedEl === overEl) return;
+					const r = overEl.getBoundingClientRect();
+					const before = clientY < r.top + r.height / 2;
+					list.insertBefore(draggedEl, before ? overEl : overEl.nextSibling);
+				};
+
+				// Mouse / Desktop drag & drop
+				root.addEventListener("dragstart", (e) => {
+					const card = e.target.closest(".card[data-pin-key]");
+					const list = getPinnedList();
+					if (!card || !list || !list.contains(card)) return;
+					draggingKey = card.getAttribute("data-pin-key") || "";
+					card.classList.add("dragging");
+					e.dataTransfer?.setData("text/plain", draggingKey);
+					e.dataTransfer && (e.dataTransfer.effectAllowed = "move");
+				});
+
+				root.addEventListener("dragend", (e) => {
+					const card = e.target.closest(".card[data-pin-key]");
+					if (card) card.classList.remove("dragging");
+					draggingKey = "";
+				});
+
+				root.addEventListener("dragover", (e) => {
+					const list = getPinnedList();
+					if (!list) return;
+					const overEl = e.target.closest(".card[data-pin-key]");
+					const draggedEl = list.querySelector(`.card[data-pin-key="${CSS.escape(draggingKey)}"]`);
+					if (!overEl || !draggedEl || !list.contains(overEl)) return;
+					e.preventDefault();
+					reorderByPointer(list, draggedEl, overEl, e.clientY);
+				});
+
+				root.addEventListener("drop", (e) => {
+					const list = getPinnedList();
+					if (!list) return;
+					e.preventDefault();
+					const place = list.getAttribute("data-place") || FOOD_PLACE_SELECTED;
+					saveOrderFromDom(place);
+				});
+
+				// Touch drag (mobile)
+				root.addEventListener(
+					"touchstart",
+					(e) => {
+						const list = getPinnedList();
+						if (!list) return;
+						const card = e.target.closest(".card[data-pin-key]");
+						if (!card || !list.contains(card)) return;
+						touchDraggingEl = card;
+						touchPlace = list.getAttribute("data-place") || FOOD_PLACE_SELECTED;
+						card.classList.add("dragging");
+					},
+					{ passive: true }
+				);
+
+				root.addEventListener(
+					"touchmove",
+					(e) => {
+						const list = getPinnedList();
+						if (!list || !touchDraggingEl) return;
+						const t = e.touches?.[0];
+						if (!t) return;
+						e.preventDefault();
+						const el = document.elementFromPoint(t.clientX, t.clientY);
+						const overEl = el?.closest?.(".card[data-pin-key]") || null;
+						if (!overEl || !list.contains(overEl)) return;
+						reorderByPointer(list, touchDraggingEl, overEl, t.clientY);
+					},
+					{ passive: false }
+				);
+
+				root.addEventListener(
+					"touchend",
+					() => {
+						if (touchDraggingEl) touchDraggingEl.classList.remove("dragging");
+						if (touchPlace) saveOrderFromDom(touchPlace);
+						touchDraggingEl = null;
+						touchPlace = "";
+					},
+					{ passive: true }
+				);
+			}
+
+			const FOOD_NOTES_KEY = "kansai_food_notes_v1";
+			let FOOD_NOTES_CACHE = {};
+
+			function loadFoodNotes() {
+				try {
+					const raw = localStorage.getItem(FOOD_NOTES_KEY);
+					if (!raw) return {};
+					const parsed = JSON.parse(raw);
+					return parsed && typeof parsed === "object" ? parsed : {};
+				} catch {
+					return {};
+				}
+			}
+
+			function saveFoodNotes(notes) {
+				localStorage.setItem(FOOD_NOTES_KEY, JSON.stringify(notes || {}));
+			}
+
+			function getFoodNote(key) {
+				if (!key) return "";
+				const v = FOOD_NOTES_CACHE[key];
+				return typeof v === "string" ? v : "";
+			}
+
+			function setFoodNote(key, value) {
+				if (!key) return;
+				const v = String(value || "");
+				if (!v.trim()) {
+					delete FOOD_NOTES_CACHE[key];
+				} else {
+					FOOD_NOTES_CACHE[key] = v;
+				}
+				saveFoodNotes(FOOD_NOTES_CACHE);
+			}
+
+			function wireFoodNotes() {
+				const root = document.getElementById("foodRoot");
+				if (!root) return;
+
+				const timers = new Map();
+				const saveSoon = (key, value) => {
+					if (timers.has(key)) clearTimeout(timers.get(key));
+					timers.set(
+						key,
+						setTimeout(() => {
+							setFoodNote(key, value);
+						}, 250)
+					);
+				};
+
+				root.addEventListener("input", (e) => {
+					const ta = e.target.closest("textarea.note-input");
+					if (!ta) return;
+					const key = ta.getAttribute("data-food-note") || "";
+					saveSoon(key, ta.value);
+				});
+
+				root.addEventListener("blur", (e) => {
+					const ta = e.target.closest("textarea.note-input");
+					if (!ta) return;
+					const key = ta.getAttribute("data-food-note") || "";
+					setFoodNote(key, ta.value);
+				}, true);
+			}
+
+			let FOOD_ITEMS_CACHE = [];
+
+			function renderFood(foodItems, selectedPlace) {
+				const root = document.getElementById("foodRoot");
+				if (!root) return;
+				const place = FOOD_PLACES.includes(selectedPlace) ? selectedPlace : "京都";
+				const filtered = (foodItems || []).filter((x) => x.place === place);
+				const pinnedOrder = getPinnedOrderForPlace(place);
+				const pinnedItems = filtered.filter((x) => isFoodPinned(x._key)).slice();
+				const pinnedIndex = new Map(pinnedOrder.map((k, i) => [k, i]));
+				pinnedItems.sort((a, b) => {
+					const ai = pinnedIndex.has(a._key) ? pinnedIndex.get(a._key) : 1e9;
+					const bi = pinnedIndex.has(b._key) ? pinnedIndex.get(b._key) : 1e9;
+					if (ai !== bi) return ai - bi;
+					return (a.title || "").localeCompare(b.title || "");
+				});
+				const unpinnedItems = filtered
+					.filter((x) => !isFoodPinned(x._key))
+					.slice();
+
+				const groupsOrder = ["food", "stay", "sight", "other"];
+				const groups = new Map();
+				for (const it of unpinnedItems) {
+					const tag = normalizeFoodTag(it.tagRaw);
+					if (!groups.has(tag.key)) groups.set(tag.key, []);
+					groups.get(tag.key).push({ ...it, tag });
+				}
+				for (const arr of groups.values()) {
+					arr.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+				}
+
+				const total = filtered.length;
+				root.innerHTML = `
+					<div class="hint-note">已整理 ${escapeHtml(
+						String(total)
+					)} 筆收藏（${escapeHtml(`📍${place}`)}）。筆記可直接編輯並自動保存；按「⭐ 置頂」會出現在本頁最上方。</div>
+					<div class="tool-grid">
+						${
+							pinnedItems.length
+								? `
+									<section class="tool-card">
+										<div class="section-title">⭐ 置頂（${escapeHtml(
+											String(pinnedItems.length)
+										)}）<span class="hint-note" style="margin-left:8px;">（可拖曳調整順序）</span></div>
+										<div class="items" id="foodPinnedList" data-place="${escapeHtml(place)}">
+											${pinnedItems
+												.map((it) => {
+													const safeTitle = escapeHtml(it.title || "-");
+													const map = it.url || mapUrl(it.title, "");
+													const note = getFoodNote(it._key) || it.note || "";
+													const comment = it.comment || "";
+													const noteSummary = note.trim() ? "（可編輯，自動保存）" : "（可編輯）";
+													const placeBadge = `📍${it.place || place}`;
+													return `
+														<article class="card" draggable="true" data-pin-key="${escapeHtml(
+															it._key
+														)}">
+															<div class="card-top">
+																<div>
+																	<div class="time">${escapeHtml(placeBadge)}｜置頂</div>
+																	<div class="name">${safeTitle}</div>
+																</div>
+																<div class="tag ${escapeHtml(
+																	normalizeFoodTag(it.tagRaw).cls
+																)}">${escapeHtml(normalizeFoodTag(it.tagRaw).label)}</div>
+															</div>
+
+														<div class="card-body">
+															${
+																comment
+																	? `<div class="row"><div class="k">留言</div><div class="v">${escapeHtml(
+																		comment
+																	)}</div></div>`
+																	: ""
+															}
+
+															<details class="story">
+																<summary>筆記 <span class="hint">${escapeHtml(noteSummary)}</span></summary>
+																<textarea class="note-input" data-food-note="${escapeHtml(
+																	titleKeyOrUrl(it)
+																)}" placeholder="在這裡補充筆記…">${escapeHtml(
+																	note
+																)}</textarea>
+															</details>
+
+															<div class="actions">
+																<button class="btn" type="button" data-pin="${escapeHtml(
+																	it._key
+																)}">⭐ 已置頂</button>
+																<a class="btn primary" href="${escapeHtml(
+																	map
+																)}" target="_blank" rel="noopener noreferrer">🗺️ 地圖</a>
+															</div>
+														</div>
+													</article>
+												`;
+											})
+												.join("")}
+										</div>
+									</section>
+								`
+								: ""
+						}
+						${groupsOrder
+							.filter((k) => (groups.get(k) || []).length > 0)
+							.map((k) => {
+								const arr = groups.get(k) || [];
+								const anyTag = arr[0]?.tag || normalizeFoodTag(k);
+								return `
+									<section class="tool-card">
+										<div class="section-title">${escapeHtml(anyTag.label)}（${escapeHtml(
+											String(arr.length)
+										)}）</div>
+										<div class="items">
+											${arr
+												.map((it) => {
+													const safeTitle = escapeHtml(it.title || "-");
+													const map = it.url || mapUrl(it.title, "");
+													const note = getFoodNote(it._key) || it.note || "";
+													const comment = it.comment || "";
+													const noteSummary = note.trim() ? "（可編輯，自動保存）" : "（可編輯）";
+														const placeBadge = `📍${it.place || place}`;
+														const pinned = isFoodPinned(it._key);
+													return `
+														<article class="card">
+															<div class="card-top">
+																<div>
+																		<div class="time">${escapeHtml(placeBadge)}｜收藏</div>
+																	<div class="name">${safeTitle}</div>
+																</div>
+																<div class="tag ${escapeHtml(it.tag.cls)}">${escapeHtml(it.tag.label)}</div>
+														</div>
+
+														<div class="card-body">
+															${
+																comment
+																	? `<div class="row"><div class="k">留言</div><div class="v">${escapeHtml(
+																		comment
+																	)}</div></div>`
+																	: ""
+															}
+
+															<details class="story">
+																<summary>筆記 <span class="hint">${escapeHtml(noteSummary)}</span></summary>
+																<textarea class="note-input" data-food-note="${escapeHtml(
+																	titleKeyOrUrl(it)
+																)}" placeholder="在這裡補充筆記…">${escapeHtml(
+																	note
+																)}</textarea>
+															</details>
+
+															<div class="actions">
+																<button class="btn" type="button" data-pin="${escapeHtml(
+																	it._key
+																)}">${pinned ? "⭐ 已置頂" : "☆ 置頂"}</button>
+																<a class="btn primary" href="${escapeHtml(map)}" target="_blank" rel="noopener noreferrer">🗺️ 地圖</a>
+															</div>
+														</div>
+													</article>
+												`;
+											})
+												.join("")}
+										</div>
+									</section>
+								`;
+							})
+							.join("")}
+					</div>
+				`;
+			}
+
+			function titleKeyOrUrl(it) {
+				return it?._key || "";
+			}
+
+			function extractGuidePills(note) {
+				const pills = [];
+				const re = /【(必吃|必點|必買|預約)】([^【】]+)/g;
+				let m;
+				while ((m = re.exec(note)) !== null) {
+					const kind = m[1];
+					const raw = (m[2] || "").trim();
+					const main = raw.split(/；|，|。|\(|\)|\s{2,}/)[0].trim();
+					if (!main) continue;
+					if (kind === "必吃") pills.push({ cls: "must-eat", text: `必吃：${main}` });
+					if (kind === "必點") pills.push({ cls: "must-order", text: `必點：${main}` });
+					if (kind === "必買") pills.push({ cls: "must-buy", text: `必買：${main}` });
+					if (kind === "預約") pills.push({ cls: "reserve", text: `預約：${main}` });
+				}
+				return pills;
+			}
+
+			function mapUrl(name, address) {
+				const q = [name, address].filter(Boolean).join(" ");
+				const url = new URL("https://www.google.com/maps/search/");
+				url.searchParams.set("api", "1");
+				url.searchParams.set("query", q);
+				return url.toString();
+			}
+
+			const SELECTED_DAY_KEY = "kansai_selected_day_v1";
+			let DAYS_CACHE = [];
+
+			function getDefaultSelectedDay(days) {
+				const saved = localStorage.getItem(SELECTED_DAY_KEY);
+				if (saved && days.some((d) => d.md === saved)) return saved;
+				return days[0]?.md || "";
+			}
+
+			function renderDayTabs(days, selectedMd) {
+				const tabs = document.getElementById("dayTabs");
+				tabs.innerHTML = "";
+
+				days.forEach((day) => {
+					const btn = document.createElement("button");
+					btn.type = "button";
+					btn.className = "day-tab";
+					btn.setAttribute("role", "tab");
+					btn.setAttribute("data-md", day.md);
+					btn.setAttribute("aria-selected", day.md === selectedMd ? "true" : "false");
+					btn.textContent = `${day.md}｜Day ${day.dayIndex}`;
+					btn.addEventListener("click", () => setSelectedDay(day.md));
+					tabs.appendChild(btn);
+				});
+			}
+
+			function applySelectedDayToUI(selectedMd) {
+				document.querySelectorAll("#dailyRoot .day").forEach((dayEl) => {
+					dayEl.style.display = dayEl.getAttribute("data-md") === selectedMd ? "block" : "none";
+				});
+
+				document.querySelectorAll("#dayTabs .day-tab").forEach((tab) => {
+					tab.setAttribute(
+						"aria-selected",
+						tab.getAttribute("data-md") === selectedMd ? "true" : "false"
+					);
+				});
+
+				const active = Array.from(document.querySelectorAll("#dayTabs .day-tab")).find(
+					(x) => x.getAttribute("data-md") === selectedMd
+				);
+				active?.scrollIntoView?.({ behavior: "smooth", inline: "center", block: "nearest" });
+				window.scrollTo({ top: 0, behavior: "smooth" });
+			}
+
+			function setSelectedDay(md) {
+				if (!md || !DAYS_CACHE.some((d) => d.md === md)) return;
+				localStorage.setItem(SELECTED_DAY_KEY, md);
+				applySelectedDayToUI(md);
+			}
+
+			function renderDaily(days, selectedMd) {
+				const root = document.getElementById("dailyRoot");
+				root.innerHTML = "";
+
+					days.forEach((day) => {
+					const weatherId = `wx-${day.md.replace("/", "-")}`;
+					const header = document.createElement("div");
+					header.className = "day-header";
+					header.innerHTML = `
+						<div class="day-title">
+							<div class="left">
+								<div class="date">${escapeHtml(formatDayTitle(day.md, day.dayIndex))}</div>
+								<div class="meta">主要地點：${escapeHtml(day.city)}｜${escapeHtml(day.summary)}</div>
+							</div>
+							<div class="weather" id="${weatherId}">
+								<div class="wx-icon" aria-hidden="true">…</div>
+								<div class="wx-text">
+									<div class="t">讀取天氣中</div>
+									<div class="d">請稍候</div>
+									<div class="wx-source">來源：-</div>
+								</div>
+							</div>
+						</div>
+					`;
+
+					const itemsWrap = document.createElement("div");
+					itemsWrap.className = "items";
+
+					day.items.forEach((it) => {
+						const type = normalizeType(it["類型"]);
+						const note = it["備註/攻略"] || "";
+						const pills = extractGuidePills(note);
+						const address = it["地址/地點"] && it["地址/地點"] !== "-" ? it["地址/地點"] : "";
+						const fee = it["費用"] && it["費用"] !== "-" ? it["費用"] : "-";
+						const story = STORY[it["名稱"]] || "";
+
+						const card = document.createElement("article");
+						card.className = "card";
+						card.innerHTML = `
+							<div class="card-top">
+								<span class="tag ${type.cls}">${escapeHtml(type.label)}</span>
+								<span class="time">${escapeHtml(it["時間"])}</span>
+							</div>
+							<div class="card-body">
+								<div class="name">${escapeHtml(it["名稱"])}</div>
+								<div class="row"><div class="k">內容</div><div class="v">${escapeHtml(it["詳細資訊"])}</div></div>
+								<div class="row"><div class="k">費用</div><div class="v">${escapeHtml(fee)}</div></div>
+								<div class="row"><div class="k">地點</div><div class="v">${escapeHtml(address || "（以名稱導航）")}</div></div>
+								${
+									pills.length
+										? `<div class="guide">${pills
+												.map(
+													(p) =>
+														`<span class="pill ${p.cls}">${escapeHtml(p.text)}</span>`
+												)
+												.join("")}</div>`
+										: ""
+								}
+								${
+									story
+										? `<details class="story"><summary>小故事 / 小貼士<span class="hint">點我展開</span></summary><p>${escapeHtml(
+												story
+											)}</p></details>`
+										: ""
+								}
+								<div class="actions">
+									<a class="btn primary" href="${escapeHtml(
+										mapUrl(it["名稱"], address)
+									)}" target="_blank" rel="noopener">🧭 導航</a>
+								</div>
+								${
+									note && note !== "-"
+										? `<div class="row"><div class="k">備註</div><div class="v">${escapeHtml(
+												note
+											)}</div></div>`
+										: ""
+								}
+							</div>
+						`;
+						itemsWrap.appendChild(card);
+					});
+
+						const dayWrap = document.createElement("section");
+						dayWrap.className = "day";
+						dayWrap.setAttribute("data-md", day.md);
+						dayWrap.style.display = day.md === selectedMd ? "block" : "none";
+					dayWrap.appendChild(header);
+					dayWrap.appendChild(itemsWrap);
+					root.appendChild(dayWrap);
+
+					// Weather async
+					getWeatherForCity(day.city)
+						.then((wx) => {
+							const el = document.getElementById(weatherId);
+							if (!el) return;
+							el.innerHTML = `
+								<div class="wx-icon" aria-hidden="true">${escapeHtml(wx.icon)}</div>
+								<div class="wx-text">
+									<div class="t">${escapeHtml(day.city)}｜${escapeHtml(wx.text)}</div>
+									<div class="d">${escapeHtml(String(wx.lo))}°C – ${escapeHtml(
+								String(wx.hi)
+							)}°C｜降雨 ${escapeHtml(String(wx.rain))}%</div>
+									<div class="wx-source">來源：${escapeHtml(wx.source)}</div>
+								</div>
+							`;
+						})
+						.catch(() => {
+							const el = document.getElementById(weatherId);
+							if (!el) return;
+							el.innerHTML = `
+								<div class="wx-icon" aria-hidden="true">⚠️</div>
+								<div class="wx-text">
+									<div class="t">天氣載入失敗</div>
+									<div class="d">請稍後再試</div>
+									<div class="wx-source">來源：WeatherAPI</div>
+								</div>
+							`;
+						});
+				});
+			}
+
+			// === Tools page ===
+			const TOOLBOX = {
+				flights: {
+					out: {
+						flightNo: "D7378",
+						airline: "AirAsia X",
+						from: "桃園 (TPE)",
+						to: "關西 (KIX)",
+						dep: "4/16 15:40",
+						arr: "4/16 19:20",
+						terminalGate: "以當日公告為準",
+					},
+					back: {
+						flightNo: "D7379",
+						airline: "AirAsia X",
+						from: "關西 (KIX)",
+						to: "桃園 (TPE)",
+						dep: "4/22 20:55",
+						arr: "4/22 22:55",
+						terminalGate: "KIX 第一航廈（T1）B7（筆記）｜其餘以當日公告為準",
+					},
+				},
+				hotels: [
+					{
+						name: "CheckIn Hotel 四條烏丸",
+						address: "京都市中京区手洗水町654-2",
+						stay: "4/16 → 4/19（3晚）",
+						checkin: "14:00 後",
+						checkout: "11:00 前",
+						note: "地鐵 21 號出口步行約 2 分鐘；1F 有 Lawson",
+					},
+					{
+						name: "ZONE 心齋橋西區",
+						address: "大阪市西区立売堀1-10-2",
+						stay: "4/19 → 4/22（3晚）",
+						checkin: "以訂房確認為準",
+						checkout: "以訂房確認為準",
+						note: "本町站/心齋橋站步行可達",
+					},
+				],
+				emergency: {
+					jp: [
+						{ label: "警察", value: "110" },
+						{ label: "救護車/消防", value: "119" },
+					],
+					placeholders: [
+						{ label: "台灣駐日辦事處（請填）", value: "—" },
+						{ label: "信用卡海外掛失（請填）", value: "—" },
+					],
+				},
+				budget: {
+					paid: [
+						{ name: "機票", amountTwd: 6396 },
+						{ name: "大阪住宿", amountTwd: 1818 },
+						{ name: "京都住宿", amountTwd: 2863 },
+					],
+				},
+			};
+
+			const LEDGER_KEY = "kansai_ledger_v1";
+			const HOTEL_BOOKING_KEY = "kansai_hotel_booking_v1";
+
+			function loadHotelBooking() {
+				try {
+					const raw = localStorage.getItem(HOTEL_BOOKING_KEY);
+					if (!raw) return {};
+					const parsed = JSON.parse(raw);
+					return parsed && typeof parsed === "object" ? parsed : {};
+				} catch {
+					return {};
+				}
+			}
+
+			function saveHotelBooking(state) {
+				localStorage.setItem(HOTEL_BOOKING_KEY, JSON.stringify(state || {}));
+			}
+
+			function loadLedger() {
+				try {
+					const raw = localStorage.getItem(LEDGER_KEY);
+					if (!raw) return [];
+					const parsed = JSON.parse(raw);
+					return Array.isArray(parsed) ? parsed : [];
+				} catch {
+					return [];
+				}
+			}
+
+			function saveLedger(rows) {
+				localStorage.setItem(LEDGER_KEY, JSON.stringify(rows));
+			}
+
+			function sumBudgetTwd() {
+				return TOOLBOX.budget.paid.reduce((a, b) => a + (b.amountTwd || 0), 0);
+			}
+
+			function money(n) {
+				return new Intl.NumberFormat("zh-TW").format(n);
+			}
+
+			function renderTools(ledgerRows) {
+				const root = document.getElementById("toolsRoot");
+				const f = TOOLBOX.flights;
+				const hotels = TOOLBOX.hotels;
+				const hotelBooking = loadHotelBooking();
+				const emergency = TOOLBOX.emergency;
+				const budget = TOOLBOX.budget;
+
+				root.innerHTML = `
+					<section class="tool-card">
+						<div class="section-title">✈️ 航班資訊</div>
+						<div class="kv">
+							<div class="line"><div class="k">去程</div><div class="v">${escapeHtml(
+								`${f.out.airline} ${f.out.flightNo}`
+							)}</div></div>
+							<div class="line"><div class="k">時間</div><div class="v">${escapeHtml(
+								`${f.out.dep} → ${f.out.arr}`
+							)}</div></div>
+							<div class="line"><div class="k">航線</div><div class="v">${escapeHtml(
+								`${f.out.from} → ${f.out.to}`
+							)}</div></div>
+							<div class="line"><div class="k">航廈/登機門</div><div class="v">${escapeHtml(
+								f.out.terminalGate
+							)}</div></div>
+							<div class="line"><div class="k">回程</div><div class="v">${escapeHtml(
+								`${f.back.airline} ${f.back.flightNo}`
+							)}</div></div>
+							<div class="line"><div class="k">時間</div><div class="v">${escapeHtml(
+								`${f.back.dep} → ${f.back.arr}`
+							)}</div></div>
+							<div class="line"><div class="k">航線</div><div class="v">${escapeHtml(
+								`${f.back.from} → ${f.back.to}`
+							)}</div></div>
+							<div class="line"><div class="k">航廈/登機門</div><div class="v">${escapeHtml(
+								f.back.terminalGate
+							)}</div></div>
+						</div>
+						<div class="small">建議回程至少提前 3 小時到機場辦理登機。</div>
+					</section>
+
+					<section class="tool-card">
+						<div class="section-title">🏨 住宿資訊</div>
+						${hotels
+							.map((h, idx) => {
+								const b = (hotelBooking && hotelBooking[idx]) || {};
+								const orderNo = typeof b.orderNo === "string" ? b.orderNo : "";
+								const pin = typeof b.pin === "string" ? b.pin : "";
+								return `
+									<div class="hotel-box" data-hotel-box="${idx}">
+										<div class="hotel-name">${escapeHtml(h.name)}</div>
+										<div class="hotel-stay">住宿期間：${escapeHtml(h.stay || "")}</div>
+										<div class="kv">
+											<div class="line"><div class="k">地址</div><div class="v">${escapeHtml(
+												h.address
+											)}</div></div>
+											<div class="line"><div class="k">Check-in</div><div class="v">${escapeHtml(
+												h.checkin
+											)}</div></div>
+											<div class="line"><div class="k">Check-out</div><div class="v">${escapeHtml(
+												h.checkout
+											)}</div></div>
+											<div class="line"><div class="k">備註</div><div class="v">${escapeHtml(
+												h.note
+											)}</div></div>
+										</div>
+										<div class="hotel-fields">
+											<label>
+												訂單編號
+												<input type="text" autocomplete="off" placeholder="自行填寫" data-hotel-idx="${idx}" data-hotel-field="orderNo" value="${escapeHtml(
+													orderNo
+												)}" />
+											</label>
+											<label>
+												PIN碼
+												<input type="text" autocomplete="off" placeholder="自行填寫" data-hotel-idx="${idx}" data-hotel-field="pin" value="${escapeHtml(
+													pin
+												)}" />
+											</label>
+										</div>
+									</div>
+								`;
+							})
+							.join("")}
+					</section>
+
+					<section class="tool-card">
+						<div class="section-title">📞 緊急聯絡</div>
+						<div class="kv">
+							${emergency.jp
+								.map(
+									(x) =>
+										`<div class="line"><div class="k">${escapeHtml(
+											x.label
+										)}</div><div class="v">${escapeHtml(x.value)}</div></div>`
+								)
+								.join("")}
+							${emergency.placeholders
+								.map(
+									(x) =>
+										`<div class="line"><div class="k">${escapeHtml(
+											x.label
+										)}</div><div class="v">${escapeHtml(x.value)}</div></div>`
+								)
+								.join("")}
+						</div>
+						<div class="small">提示：可把常用電話改成自己的版本（直接改本檔案）。</div>
+					</section>
+
+					<section class="tool-card">
+						<div class="section-title">💰 預算與記帳表</div>
+						<div class="kv">
+							${budget.paid
+								.map(
+									(x) =>
+										`<div class="line"><div class="k">已付：${escapeHtml(
+											x.name
+										)}</div><div class="v">TWD ${escapeHtml(
+											money(x.amountTwd)
+										)}</div></div>`
+								)
+								.join("")}
+							<div class="line"><div class="k">合計</div><div class="v">TWD ${escapeHtml(
+								money(sumBudgetTwd())
+							)}</div></div>
+						</div>
+
+						<div class="ledger">
+							<form id="ledgerForm" autocomplete="off">
+								<label>
+									日期
+									<input name="date" type="date" required />
+								</label>
+								<label>
+									類別
+									<select name="category" required>
+										<option value="交通">交通</option>
+										<option value="餐飲">餐飲</option>
+										<option value="景點">景點</option>
+										<option value="購物">購物</option>
+										<option value="住宿">住宿</option>
+										<option value="其他" selected>其他</option>
+									</select>
+								</label>
+								<label class="full">
+									項目
+									<input name="item" type="text" placeholder="例：黑門市場 生蠔" required />
+								</label>
+								<label>
+									幣別
+									<select name="currency" required>
+										<option value="JPY" selected>JPY（日圓）</option>
+										<option value="TWD">TWD（台幣）</option>
+									</select>
+								</label>
+								<label>
+									金額
+									<input name="amount" type="number" inputmode="decimal" min="0" step="0.01" required />
+								</label>
+								<div class="full" style="display:flex; gap:10px;">
+									<button class="btn primary" type="submit" style="flex:1;">➕ 新增</button>
+									<button class="btn danger" id="ledgerClear" type="button" style="flex:1;">清除全部</button>
+								</div>
+							</form>
+
+							<div id="ledgerSummary"></div>
+							<div style="overflow:auto;">
+								<table class="table" aria-label="記帳表">
+									<thead>
+										<tr>
+											<th>日期</th>
+											<th>類別</th>
+											<th>項目</th>
+											<th class="right">金額</th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody id="ledgerBody"></tbody>
+								</table>
+							</div>
+						</div>
+
+						<div class="small">記帳資料會儲存在本機瀏覽器（localStorage），不會上傳。</div>
+					</section>
+				`;
+
+				wireHotelBooking();
+				wireLedger(ledgerRows);
+			}
+
+			function wireHotelBooking() {
+				const state = loadHotelBooking();
+				const inputs = document.querySelectorAll("[data-hotel-idx][data-hotel-field]");
+				inputs.forEach((input) => {
+					input.addEventListener("input", () => {
+						const idx = String(input.getAttribute("data-hotel-idx") || "");
+						const field = String(input.getAttribute("data-hotel-field") || "");
+						if (!idx) return;
+						if (field !== "orderNo" && field !== "pin") return;
+						state[idx] = state[idx] && typeof state[idx] === "object" ? state[idx] : {};
+						state[idx][field] = String(input.value || "");
+						saveHotelBooking(state);
+					});
+				});
+			}
+
+			function computeLedgerSummary(rows) {
+				const byCurrency = new Map();
+				const byCatCurrency = new Map();
+				for (const r of rows) {
+					const amount = Number(r.amount || 0);
+					const cur = r.currency || "JPY";
+					const cat = r.category || "其他";
+
+					byCurrency.set(cur, (byCurrency.get(cur) || 0) + amount);
+					const key = `${cat}__${cur}`;
+					byCatCurrency.set(key, (byCatCurrency.get(key) || 0) + amount);
+				}
+				return { byCurrency, byCatCurrency };
+			}
+
+			function renderLedgerTable(rows) {
+				const body = document.getElementById("ledgerBody");
+				body.innerHTML = "";
+
+				rows
+					.slice()
+					.sort((a, b) => (a.date || "").localeCompare(b.date || ""))
+					.forEach((r, idx) => {
+						const tr = document.createElement("tr");
+						tr.innerHTML = `
+							<td>${escapeHtml(r.date || "-")}</td>
+							<td>${escapeHtml(r.category || "-")}</td>
+							<td>${escapeHtml(r.item || "-")}</td>
+							<td class="right">${escapeHtml(r.currency || "")}&nbsp;${escapeHtml(
+								money(Number(r.amount || 0))
+							)}</td>
+							<td class="right"><button class="btn danger" data-del="${escapeHtml(
+								String(idx)
+							)}" type="button">刪除</button></td>
+						`;
+						body.appendChild(tr);
+					});
+			}
+
+			function renderLedgerSummary(rows) {
+				const el = document.getElementById("ledgerSummary");
+				const { byCurrency, byCatCurrency } = computeLedgerSummary(rows);
+
+				const currencies = Array.from(byCurrency.keys()).sort();
+				const totalsLine = currencies
+					.map((c) => `${c} ${money(byCurrency.get(c) || 0)}`)
+					.join("｜");
+
+				const cats = ["交通", "餐飲", "景點", "購物", "住宿", "其他"];
+				const breakdown = cats
+					.map((cat) => {
+						const parts = currencies
+							.map((cur) => {
+								const v = byCatCurrency.get(`${cat}__${cur}`) || 0;
+								return v ? `${cur} ${money(v)}` : null;
+							})
+							.filter(Boolean)
+							.join(" / ");
+						if (!parts) return null;
+						return `<div class="line"><div class="k">${escapeHtml(
+							cat
+						)}</div><div class="v">${escapeHtml(parts)}</div></div>`;
+					})
+					.filter(Boolean)
+					.join("");
+
+				el.innerHTML = `
+					<div class="kv" style="margin-top:0;">
+						<div class="line"><div class="k">總支出</div><div class="v">${escapeHtml(
+							totalsLine || "-"
+						)}</div></div>
+						${breakdown}
+					</div>
+				`;
+			}
+
+			function wireLedger(initialRows) {
+				let rows = initialRows.slice();
+
+				const form = document.getElementById("ledgerForm");
+				const clearBtn = document.getElementById("ledgerClear");
+				const body = document.getElementById("ledgerBody");
+
+				const rerender = () => {
+					saveLedger(rows);
+					renderLedgerSummary(rows);
+					renderLedgerTable(rows);
+				};
+
+				rerender();
+
+				form.addEventListener("submit", (e) => {
+					e.preventDefault();
+					const fd = new FormData(form);
+					const row = {
+						date: String(fd.get("date") || "").trim(),
+						category: String(fd.get("category") || "其他").trim(),
+						item: String(fd.get("item") || "").trim(),
+						currency: String(fd.get("currency") || "JPY").trim(),
+						amount: Number(fd.get("amount") || 0),
+					};
+
+					if (!row.date || !row.item || !(row.amount >= 0)) return;
+					rows.push(row);
+					form.reset();
+					rerender();
+				});
+
+				clearBtn.addEventListener("click", () => {
+					const ok = confirm("確定清除全部記帳資料？（此動作無法復原）");
+					if (!ok) return;
+					rows = [];
+					rerender();
+				});
+
+				body.addEventListener("click", (e) => {
+					const btn = e.target.closest("button[data-del]");
+					if (!btn) return;
+					const idx = Number(btn.getAttribute("data-del"));
+					if (!Number.isFinite(idx)) return;
+					rows.splice(idx, 1);
+					rerender();
+				});
+			}
+
+			// === App init ===
+			function buildDays(items) {
+				const byDate = new Map();
+				for (const it of items) {
+					const md = it["日期"];
+					if (!byDate.has(md)) byDate.set(md, []);
+					byDate.get(md).push(it);
+				}
+				const dates = Array.from(byDate.keys()).sort((a, b) => {
+					const da = parseMonthDay(a);
+					const db = parseMonthDay(b);
+					return da - db;
+				});
+				return dates.map((md, i) => {
+					const city = DAY_PRIMARY_CITY[md] || "京都";
+					const dayIndex = i + 1;
+					const its = byDate.get(md).slice().sort((a, b) => (a["時間"] || "").localeCompare(b["時間"] || ""));
+					const summary = `${its.length} 個行程`;
+					return { md, city, dayIndex, items: its, summary };
+				});
+			}
+
+			function setPage(page) {
+				const isDaily = page === "daily";
+				const isFood = page === "food";
+				const isTools = page === "tools";
+				document.getElementById("page-daily").setAttribute("aria-hidden", isDaily ? "false" : "true");
+				document.getElementById("page-food").setAttribute("aria-hidden", isFood ? "false" : "true");
+				document.getElementById("page-tools").setAttribute("aria-hidden", isTools ? "false" : "true");
+				document.getElementById("tab-daily").setAttribute("aria-selected", isDaily ? "true" : "false");
+				document.getElementById("tab-food").setAttribute("aria-selected", isFood ? "true" : "false");
+				document.getElementById("tab-tools").setAttribute("aria-selected", isTools ? "true" : "false");
+			}
+
+			function init() {
+				const now = new Date();
+				document.getElementById("nowHint").textContent = `今天：${now.toLocaleDateString("zh-TW")}`;
+
+				const items = parseCSV(ITINERARY_CSV);
+				const days = buildDays(items);
+				DAYS_CACHE = days;
+				const selected = getDefaultSelectedDay(days);
+				renderDayTabs(days, selected);
+				renderDaily(days, selected);
+
+				FOOD_NOTES_CACHE = loadFoodNotes();
+				FOOD_PINNED_CACHE = loadFoodPinned();
+				FOOD_PINNED_ORDER_CACHE = loadFoodPinnedOrder();
+				const foodRaw = parseCSV(FOOD_CSV)
+					.map(normalizeFoodItem)
+					.filter((x) => (x.title || x.url) && x.title !== "—");
+				const foodItems = dedupeFoodItems(foodRaw).map((x) => ({ ...x, place: inferFoodPlace(x) }));
+				FOOD_ITEMS_CACHE = foodItems;
+				FOOD_PLACE_SELECTED = loadFoodPlaceDefault();
+				renderFoodPlaceTabs(FOOD_PLACE_SELECTED);
+				renderFood(foodItems, FOOD_PLACE_SELECTED);
+				wireFoodNotes();
+				wireFoodPinned();
+				wirePinnedSort();
+
+				const ledgerRows = loadLedger();
+				renderTools(ledgerRows);
+
+				document.getElementById("tab-daily").addEventListener("click", () => setPage("daily"));
+				document.getElementById("tab-food").addEventListener("click", () => setPage("food"));
+				document.getElementById("tab-tools").addEventListener("click", () => setPage("tools"));
+			}
+
+			init();
+		</script>
+	</body>
+</html>

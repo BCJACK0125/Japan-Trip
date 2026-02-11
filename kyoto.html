@@ -1,3 +1,61 @@
+已開啟會話群組。共 7 封郵件。4 封未讀取郵件。
+
+移至內容
+透過螢幕閱讀器使用 Gmail
+第 1 個，共 1,140 個
+Test Email with CSV Attachment
+收件匣
+
+CrawlerReport@dev
+附件
+上午11:39 (9 小時前)
+Hello! Please find the attached CSV report.
+
+CrawlerReport@dev
+附件
+下午3:09 (5 小時前)
+Hello! Please find the attached CSV report.
+
+CrawlerReport@dev
+附件
+下午3:10 (5 小時前)
+Hello! Please find the attached CSV report.
+
+CrawlerReport@dev <noreply-dev@esb13.cloud>
+附件
+下午3:35 (5 小時前)
+寄給 我
+
+這封郵件似乎是以英文撰寫而成
+ 1 個附件
+  •  已通過 Gmail 掃描檢查
+
+CrawlerReport@dev <noreply-dev@esb13.cloud>
+附件
+下午4:03 (4 小時前)
+寄給 我
+
+這封郵件似乎是以英文撰寫而成
+ 1 個附件
+  •  已通過 Gmail 掃描檢查
+
+CrawlerReport@dev <noreply-dev@esb13.cloud>
+附件
+下午4:36 (4 小時前)
+寄給 我
+
+這封郵件似乎是以英文撰寫而成
+ 1 個附件
+  •  已通過 Gmail 掃描檢查
+
+CrawlerReport@dev <noreply-dev@esb13.cloud>
+附件
+下午4:45 (3 小時前)
+寄給 我
+
+這封郵件似乎是以英文撰寫而成
+ 1 個附件
+  •  已通過 Gmail 掃描檢查
 <!doctype html>
 <html lang="zh-Hant">
 	<head>
@@ -5,12 +63,14 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="theme-color" content="#2F4F4F" />
 		<title>2026 京阪神行程小工具</title>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
 			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
 			rel="stylesheet"
 		/>
+		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 		<style>
 			:root {
 				--ink: #2f4f4f;
@@ -570,7 +630,7 @@
 				margin: 0 auto;
 				padding: 10px 12px;
 				display: grid;
-				grid-template-columns: repeat(3, minmax(0, 1fr));
+				grid-template-columns: repeat(4, minmax(0, 1fr));
 				gap: 10px;
 			}
 
@@ -647,6 +707,119 @@
 					grid-template-columns: 86px 1fr;
 				}
 			}
+
+			/* === Map (Leaflet) === */
+			.map-shell {
+				position: relative;
+				height: 420px;
+				margin: 0 -16px;
+				border-top: 1px solid rgba(47, 79, 79, 0.08);
+				border-bottom: 1px solid rgba(47, 79, 79, 0.08);
+				background: rgba(47, 79, 79, 0.06);
+			}
+
+			@supports (height: 100dvh) {
+				.map-shell {
+					height: 420px;
+				}
+			}
+
+			.map {
+				width: 100%;
+				height: 100%;
+			}
+
+			.map-loading {
+				position: absolute;
+				inset: 0;
+				z-index: 2;
+				background: rgba(245, 245, 245, 0.78);
+				backdrop-filter: blur(8px);
+				display: none;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				font-weight: 900;
+			}
+
+			.map-loading[aria-hidden="false"] {
+				display: flex;
+			}
+
+			.map-controls {
+				position: absolute;
+				left: 12px;
+				right: 12px;
+				bottom: 12px;
+				z-index: 3;
+				padding: 10px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				border-radius: 14px;
+				border: 1px solid rgba(47, 79, 79, 0.14);
+				background: rgba(255, 255, 255, 0.90);
+				backdrop-filter: blur(10px);
+				box-shadow: var(--shadow);
+			}
+
+			.map-controls .meta {
+				display: grid;
+				gap: 2px;
+				min-width: 0;
+			}
+
+			.map-controls .meta .t {
+				font-size: 13px;
+				font-weight: 950;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			.map-controls .meta .d {
+				font-size: 12px;
+				color: var(--muted);
+			}
+
+			.map-controls .btns {
+				display: flex;
+				gap: 8px;
+				flex: 0 0 auto;
+			}
+
+			.map-controls .btn {
+				min-height: 40px;
+				padding: 9px 10px;
+				border-radius: 12px;
+			}
+
+			.gps-pulse {
+				width: 14px;
+				height: 14px;
+				border: 2px solid #fff;
+				border-radius: 50%;
+				background-color: var(--ink);
+				box-shadow: 0 0 0 4px rgba(47, 79, 79, 0.24);
+				animation: pulse-ink 2s infinite;
+			}
+
+			@keyframes pulse-ink {
+				0% {
+					box-shadow: 0 0 0 0 rgba(47, 79, 79, 0.34);
+				}
+				70% {
+					box-shadow: 0 0 0 10px rgba(47, 79, 79, 0);
+				}
+				100% {
+					box-shadow: 0 0 0 0 rgba(47, 79, 79, 0);
+				}
+			}
+
+			.leaflet-popup-content-wrapper {
+				border-radius: 14px;
+			}
 		</style>
 	</head>
 	<body>
@@ -670,6 +843,27 @@
 					</div>
 				</section>
 
+				<section class="page" id="page-map" aria-hidden="true">
+					<div class="map-shell" id="mapShell">
+						<div id="map" class="map" aria-label="地圖"></div>
+						<div class="map-loading" id="mapLoading" aria-hidden="true">⏳ 讀取地圖中…</div>
+						<div class="map-controls" role="group" aria-label="地圖控制">
+							<div class="meta">
+								<div class="t" id="mapTitle">📍 地圖</div>
+								<div class="d" id="mapCounts">—</div>
+							</div>
+							<div class="btns">
+								<button class="btn" id="mapRefresh" type="button">🔄</button>
+								<button class="btn" id="mapLocate" type="button">🎯</button>
+								<button class="btn primary" id="mapToggleFood" type="button">＋今日餐廳</button>
+							</div>
+						</div>
+					</div>
+					<div class="hint-note">
+						提示：地圖會顯示「當天行程地點」，並可一鍵疊加顯示「該城市已收藏的餐廳」。
+					</div>
+				</section>
+
 				<section class="page" id="page-food" aria-hidden="true">
 					<div class="day-tabs" id="foodPlaceTabs" role="tablist" aria-label="吃吃喝喝地點"></div>
 					<div id="foodRoot"></div>
@@ -684,6 +878,9 @@
 				<div class="tabs-inner">
 					<button class="tab" id="tab-daily" aria-selected="true" type="button">
 						🗓️ 每日行程
+					</button>
+					<button class="tab" id="tab-map" aria-selected="false" type="button">
+						🗺️ 地圖
 					</button>
 					<button class="tab" id="tab-food" aria-selected="false" type="button">
 						🍴 吃吃喝喝
@@ -843,20 +1040,66 @@ Sukiyaki Kimura,很道地的DIY壽喜燒,https://www.google.com/maps/place/Sukiy
 
 			// === Stories / Tips (50-100字左右) ===
 			const STORY = {
+				"關西機場 (KIX)":
+					"關西入境/出境的大門。落地後先確認入境動線與行李轉盤，建議提前準備 Visit Japan Web 以加快通關；機場內可買 ICOCA、SIM/eSIM、補充現金與零食，回程記得預留安檢與退稅時間。",
+				"JR Haruka":
+					"從關西機場直達京都最省心的特急之一。若已預約/購票，記得先到綠色機台或窗口兌換實體票與指定席；上車前看清楚月台與車廂號，行李可放置於座位後方或車廂端部空間。",
+				"CheckIn Hotel 四條烏丸":
+					"位在四條烏丸一帶，逛街與轉乘都方便。抵達後先確認入住時間與寄放行李規則，房內常見有加濕器/空氣清淨選項；周邊便利店密度高，晚上補給、隔天早起行程都好安排。",
 				"伏見稻荷大社":
-					"以千本鳥居聞名的稻荷信仰總本社。清晨人少、光線柔和，拍照更乾淨；若體力允許可往上走一段，越往上越安靜。",
-				清水寺:
-					"清水舞台採懸空木構工法，是京都代表性景觀。音羽之瀧三道泉水寓意不同，習俗是擇一取用更靈驗；坡道區域石階多，建議穿好走的鞋。",
+					"以千本鳥居聞名、供奉稻荷大神的稻荷信仰總本社，歷史可追溯到 8 世紀。紅色鳥居多由商家或個人奉納，象徵祈求生意興隆與五穀豐登；越往山上走越清幽，會遇到小神社與石狐狸。清晨最舒服、也最容易拍到乾淨的鳥居長廊。",
+				"清水寺":
+					"京都代表名剎之一，現存本堂多為江戶時代重建；著名的『清水舞台』以懸空木構架起，站在舞台邊能俯瞰京都街景。音羽之瀧三道泉水常被解讀為學業、戀愛、長壽等祈願，傳統說法是擇一取用更靈；寺域坡道與石階多，想慢慢逛、好好拍照，穿好走的鞋最重要。",
+				"二年坂/三年坂":
+					"清水寺門前延伸的傳統坡道街，石板路、町家與小店把『老京都』的氛圍拉滿。傳說三年坂跌倒不吉利（有人說會折壽、也有人說會帶來厄運），其實更多是提醒石板路雨天很滑要小心；想拍到更空的街景，建議一早來或傍晚收店前，光線也更柔和。",
+				"錦市場":
+					"被稱作『京都人的廚房』，狹長的市場街聚集海鮮、漬物、京野菜、豆皮與各式小吃，逛起來像一條可以吃的博物館。許多老店代代相傳，會看到職人把刀工、炭火與醃漬手藝當成日常；想慢慢試吃建議中午前到，傍晚店家會陸續收攤。部分路段不鼓勵邊走邊吃，看到告示就站到一旁吃完再走最禮貌。",
+				"下鴨神社":
+					"全名賀茂御祖神社，是京都最古老的神社群之一，也是世界遺產。入口的糺之森像城市裡的原始森林，走進去會立刻降溫、心情也慢下來；相傳能『糾正』心中的迷惘。主祭神與緣結、家族守護等信仰相關，授與品選擇多；參拜後到鴨川與高野川合流處散步，很有京都日常的味道。",
+				"滿天串燒 (先斗町)":
+					"先斗町小巷是京都夜晚的氣氛擔當，燈籠與木造街景很有味道。熱門店常需排隊或預約，建議提早到或先訂位；用餐後可沿鴨川散步，夜風偏涼可帶薄外套。",
+				"JR 山陰本線":
+					"前往嵐山一帶的常用鐵道路線，從京都/二條等站可銜接。通勤時段車廂較擠，想舒服可避開尖峰；IC 卡多半可直接刷進出，搭車前留意列車方向與停靠站別。",
+				"嵐山小火車":
+					"保津川沿線的觀光小火車，景色隨季節變化很有看頭。熱門班次建議事先訂票，座位通常面向河谷那側更好看；記得提前到站換票/取票，並預留排隊與拍照時間。",
+				"御髮神社":
+					"相傳是日本少見以『頭髮』為主題的神社，供奉與理髮業相關的祖師神，許多美容師與在意髮量的人會來祈願。境內小巧，常見奉納的梳子、髮相關御守很可愛；這一帶多是住宅小路，走訪時放低音量、不要堵住通行，會更像在京都散步。",
+				"竹林小徑":
+					"嵐山最經典的竹林步道，風吹竹葉的聲音很像天然白噪音。這裡之所以迷人，不只是『竹子很高』，而是光線穿透後形成的層次感：清晨或陰天反而更好拍。白天人潮多，拍照時靠邊、別停在路中央，既安全也更有禮貌。",
+				"嵐山商業街":
+					"嵐山車站周邊的商店街很適合邊走邊吃：可樂餅、抹茶甜點、伴手禮一次補齊。中午後人潮變多，餐廳候位時間會拉長；若要買限定商品，先逛再吃通常更有效率。",
 				"宇治平等院":
-					"鳳凰堂是 10 圓硬幣上的經典圖案，池水倒影很吃光線與風；建議開門時段先入園，避開團客尖峰，逛起來更舒服。",
+					"以鳳凰堂聞名的世界遺產，也是 10 圓硬幣上的經典圖案。鳳凰堂建於平安時代末期，反映了當時貴族嚮往『極樂淨土』的審美：對稱的建築倒映在池面上，風一停就像一張明信片。想拍倒影建議開門就進園、避開團客尖峰；也別錯過館內文物（多為複製/展示與真品輪替），能更理解宇治在日本佛教文化裡的分量。",
+				"中村藤吉 本店":
+					"宇治代表級抹茶名店，甜點、茶飲與伴手禮都很強。通常需要現場抽號碼牌等候，建議一到就先取號再去附近散步；若不想久等，也可以改買外帶商品當作補給。",
 				"奈良公園":
-					"鹿很親人也很會搶食。拿鹿仙貝時把包裝收好、手伸直給餅，別一次掏出一大把；被圍住就快步離開人群較少的區域。",
-				勝尾寺:
-					"以「勝運」達摩聞名，角落與階梯旁常有驚喜達摩牆。若想拍到人少的畫面，越早抵達越好；山上氣溫偏低，帶件薄外套更舒適。",
+					"奈良的鹿被視為『神的使者』傳說已久，因此牠們在市區裡的存在感非常自然。鹿很親人也很會搶食：拿鹿仙貝時先把包裝收好、手伸直給餅，別一次掏出一大把；被圍住就快步移動到人少處。看到鹿鞠躬也別太驚訝，那常是『學會了討餅的動作』，不是禮貌競賽。",
+				"若草山":
+					"奈良市景的超好取景點，坡度不算難但一路上去會小喘。若草山也與奈良的『山燒』傳統活動有名（每年固定時節點火），山體因此常保持草坡的樣貌；傍晚時分光線會把城市染成金色，很適合慢慢走、慢慢拍。入場/關門時間要留意，想看晚霞建議提早上山卡位並注意天候與風。",
+				"ZONE 心齋橋西區":
+					"大阪市區住宿的落腳點，移動到心齋橋/本町一帶相對便利。Check-in 後先確認門禁、電梯與備品規則；晚上回飯店路上注意末班車時間，若有購物戰利品可先整理收納隔天更輕鬆。",
+				"御堂筋線+公車":
+					"前往勝尾寺常見的組合路線：地鐵先拉近距離，再轉乘公車上山。建議先查好公車班次與站牌位置，尖峰可能排隊；上車後留意下車提示，山區天氣較涼可帶薄外套。",
+				"勝尾寺":
+					"以『勝運』聞名的寺院，最吸睛的是到處都是奉納的小達摩：階梯邊、庭園角落、欄杆上都像在偷偷看著你。傳說把願望託付給達摩、完成後再回來還願，因此達摩會一年比一年多；越早到越好拍，也更能安靜感受山寺氣氛。山上偏涼，帶件薄外套會更舒服。",
+				"箕面大瀑布":
+					"大阪近郊的森林散步路線，步道沿溪走、空氣清新，很適合在市區行程中安排半日放鬆。路面多為平緩但偶有濕滑，鞋子要防滑；途中可補給小吃，楓葉天婦羅是人氣名物。",
+				"心齋橋/道頓堀":
+					"大阪最熱鬧的逛街與美食集中地：藥妝、服飾、招牌霓虹一次滿足。晚上人潮密度高，集合點建議先講好；想拍固力果跑跑人建議避開尖峰時段，逛街也別忘了留意末班車。",
 				"大阪城天守閣":
-					"天守閣是大阪象徵，內部多為展覽動線，登高可俯瞰護城河與城市天際線。早上開門先上樓，通常排隊更短、視野也更清晰。",
+					"大阪的城市象徵，最早由豐臣秀吉所建（後來多次戰火焚毀與重建），如今的天守閣外觀延續歷史意象。城郭規模很大，護城河與巨石城牆是看點之一；館內以展覽動線為主，登高能俯瞰大阪市區。想省排隊，建議一開門就先上樓、再慢慢往下看展。",
+				"黑門市場":
+					"大阪的『吃貨市場』，海鮮、生蠔、和牛、甜點應有盡有，從早餐一路吃到早午餐完全沒問題。這裡的節奏很大阪：豪爽、直接、香味四溢；熱門攤位常要排隊，越早來越能吃得從容。現金/電子支付規則各店不同，準備些零錢會更順。",
+				"難波八阪神社":
+					"以巨大『獅子殿』聞名的神社，張口的造型被說能『吞掉厄運、帶來勝運』，因此考生與想轉運的人特別愛來。腹地不大、停留時間短，很適合排在道頓堀/心齋橋逛街前後當作小插曲；拍照時別擋住參拜動線，退一步會更好取景也更有禮貌。",
 				"梅田空中庭園":
-					"露天圓形展望台是招牌，高空風大偏涼；日落前後是最佳時段，能同時收下黃昏與夜景，建議提前到現場避開尖峰排隊。",
+					"位於梅田的高樓展望台，以連結兩棟大樓的露天圓形迴廊最有辨識度。這裡的浪漫點在於『視野很開』：日落時看天色從藍到金，再一路切到夜景，是同一個位置收兩種風景。高空風大偏涼，尤其夜間建議帶薄外套；想避排隊就提早到，先上去卡黃昏時段最划算。",
+				"難波 Parco/大丸":
+					"最後一天的補貨與伴手禮衝刺點，百貨與商場品牌齊全，逛起來不怕雨。建議先鎖定要買的樓層與品牌，集中採買省時間；若要退稅，記得帶護照並把收據與商品包裝保留好。",
+				"臨空城 Outlet":
+					"機場前最後一站的大型 Outlet，時間抓得好很適合做『最後補一波』。熱門運動品牌與精品折扣常有驚喜，但也容易買到超重；建議先確認行李重量與托運規則，並預留移動到機場的時間。",
+				"南海電鐵":
+					"從大阪市區往返關西機場的重要路線之一，班次多、路線清楚。出發前先確認要搭普通/特急與停靠站別，避免上錯車；若時間緊迫建議提早到站，並把登機所需文件集中收納方便拿取。",
 			};
 
 			// === CSV parser (supports quoted fields) ===
@@ -1509,6 +1752,7 @@ Sukiyaki Kimura,很道地的DIY壽喜燒,https://www.google.com/maps/place/Sukiy
 
 			const SELECTED_DAY_KEY = "kansai_selected_day_v1";
 			let DAYS_CACHE = [];
+			let CURRENT_PAGE = "daily";
 
 			function getDefaultSelectedDay(days) {
 				const saved = localStorage.getItem(SELECTED_DAY_KEY);
@@ -1556,6 +1800,299 @@ Sukiyaki Kimura,很道地的DIY壽喜燒,https://www.google.com/maps/place/Sukiy
 				if (!md || !DAYS_CACHE.some((d) => d.md === md)) return;
 				localStorage.setItem(SELECTED_DAY_KEY, md);
 				applySelectedDayToUI(md);
+				if (CURRENT_PAGE === "map") queueMapRefresh();
+			}
+
+			function getSelectedDayMd() {
+				const saved = localStorage.getItem(SELECTED_DAY_KEY);
+				if (saved && DAYS_CACHE.some((d) => d.md === saved)) return saved;
+				return DAYS_CACHE[0]?.md || "";
+			}
+
+			function getSelectedDayObj() {
+				const md = getSelectedDayMd();
+				return DAYS_CACHE.find((d) => d.md === md) || DAYS_CACHE[0] || null;
+			}
+
+			// === Map (Leaflet) ===
+			const MAP_SHOW_CITY_FOOD_KEY = "kansai_map_show_city_food_v1";
+			const GEOCODE_CACHE_KEY = "kansai_geocode_cache_v1";
+			const GEOCODE_TTL_MS = 1000 * 60 * 60 * 24 * 30; // 30 days
+			const NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/search";
+			const CITY_CENTER = {
+				京都: [35.0116, 135.7681],
+				大阪: [34.6937, 135.5023],
+				宇治: [34.8843, 135.7991],
+				奈良: [34.6851, 135.8048],
+			};
+
+			let mapInstance = null;
+			let mapDayLayer = null;
+			let mapFoodLayer = null;
+			let mapUserMarker = null;
+			let mapUserLocation = null;
+			let mapGeoWatchId = null;
+			let mapShowCityFood = localStorage.getItem(MAP_SHOW_CITY_FOOD_KEY) === "1";
+			let mapRefreshTimer = null;
+
+			function setMapLoading(isLoading) {
+				const el = document.getElementById("mapLoading");
+				if (!el) return;
+				el.setAttribute("aria-hidden", isLoading ? "false" : "true");
+			}
+
+			function loadGeocodeCache() {
+				try {
+					return JSON.parse(localStorage.getItem(GEOCODE_CACHE_KEY) || "{}") || {};
+				} catch {
+					return {};
+				}
+			}
+
+			function saveGeocodeCache(cache) {
+				try {
+					localStorage.setItem(GEOCODE_CACHE_KEY, JSON.stringify(cache));
+				} catch {
+					// ignore quota
+				}
+			}
+
+			let geocodeQueue = Promise.resolve();
+			function scheduleGeocode(fn) {
+				// Serialize + tiny delay to be gentle with Nominatim
+				geocodeQueue = geocodeQueue
+					.then(() => fn())
+					.then(
+						(res) =>
+							new Promise((resolve) => {
+								setTimeout(() => resolve(res), 220);
+							})
+					);
+				return geocodeQueue;
+			}
+
+			async function geocodeOne(query) {
+				const q = String(query || "").trim();
+				if (!q) return null;
+				const key = q.toLowerCase();
+				const cache = loadGeocodeCache();
+				const hit = cache[key];
+				if (hit && hit.lat && hit.lng && Date.now() - (hit.ts || 0) < GEOCODE_TTL_MS) {
+					return { lat: hit.lat, lng: hit.lng, name: hit.name || q };
+				}
+
+				return scheduleGeocode(async () => {
+					const url = new URL(NOMINATIM_ENDPOINT);
+					url.searchParams.set("format", "json");
+					url.searchParams.set("q", q);
+					url.searchParams.set("limit", "1");
+					const res = await fetch(url.toString(), {
+						headers: {
+							"Accept": "application/json",
+							"Accept-Language": "ja,zh-TW,zh,en",
+						},
+					});
+					if (!res.ok) return null;
+					const data = await res.json();
+					const row = Array.isArray(data) ? data[0] : null;
+					if (!row) return null;
+					const lat = Number.parseFloat(row.lat);
+					const lng = Number.parseFloat(row.lon);
+					if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+					cache[key] = { lat, lng, name: row.display_name || q, ts: Date.now() };
+					saveGeocodeCache(cache);
+					return { lat, lng, name: row.display_name || q };
+				});
+			}
+
+			function resizeMapShell() {
+				const shell = document.getElementById("mapShell");
+				if (!shell) return;
+				const topbar = document.querySelector(".topbar");
+				const tabs = document.querySelector(".tabs");
+				const top = topbar ? topbar.getBoundingClientRect().bottom : 0;
+				const bottom = tabs ? tabs.getBoundingClientRect().height : 84;
+				const target = Math.max(280, Math.floor(window.innerHeight - top - bottom - 16));
+				shell.style.height = `${target}px`;
+				if (mapInstance) mapInstance.invalidateSize();
+			}
+
+			function startUserLocationWatch() {
+				if (!("geolocation" in navigator)) return;
+				if (mapGeoWatchId !== null) return;
+				mapGeoWatchId = navigator.geolocation.watchPosition(
+					(pos) => {
+						mapUserLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+						if (!mapInstance) return;
+						const icon = L.divIcon({
+							className: "",
+							html: "<div class='gps-pulse'></div>",
+							iconSize: [14, 14],
+						});
+						if (mapUserMarker) mapUserMarker.setLatLng([mapUserLocation.lat, mapUserLocation.lng]);
+						else mapUserMarker = L.marker([mapUserLocation.lat, mapUserLocation.lng], { icon }).addTo(mapInstance);
+					},
+					() => {
+						// ignore
+					},
+					{ enableHighAccuracy: true, maximumAge: 15000, timeout: 10000 }
+				);
+			}
+
+			function stopUserLocationWatch() {
+				if (!("geolocation" in navigator)) return;
+				if (mapGeoWatchId === null) return;
+				navigator.geolocation.clearWatch(mapGeoWatchId);
+				mapGeoWatchId = null;
+			}
+
+			function centerOnUser() {
+				if (!mapInstance || !mapUserLocation) return;
+				mapInstance.flyTo([mapUserLocation.lat, mapUserLocation.lng], 15, { duration: 0.75 });
+			}
+
+			function updateMapToggleButton() {
+				const btn = document.getElementById("mapToggleFood");
+				if (!btn) return;
+				btn.textContent = mapShowCityFood ? "✓ 今日餐廳" : "＋今日餐廳";
+				btn.classList.toggle("primary", !mapShowCityFood);
+			}
+
+			function ensureMapInstance() {
+				if (mapInstance) return;
+				const mapEl = document.getElementById("map");
+				if (!mapEl || typeof L === "undefined") return;
+				const day = getSelectedDayObj();
+				const city = day?.city || "京都";
+				const center = CITY_CENTER[city] || CITY_CENTER["京都"];
+				mapInstance = L.map("map", { zoomControl: true }).setView(center, 13);
+				L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+					attribution: "© OpenStreetMap",
+					maxZoom: 19,
+				}).addTo(mapInstance);
+				mapDayLayer = L.layerGroup().addTo(mapInstance);
+				mapFoodLayer = L.layerGroup().addTo(mapInstance);
+			}
+
+			function getDayLocationQueries(day) {
+				const out = [];
+				const seen = new Set();
+				for (const it of day?.items || []) {
+					const name = String(it["名稱"] || "").trim();
+					const addr = String(it["地址/地點"] || "").trim();
+					const type = String(it["類型"] || "").trim();
+					if (!name && !addr) continue;
+					const q = [name, addr].filter(Boolean).join(" ");
+					const key = q.toLowerCase();
+					if (seen.has(key)) continue;
+					seen.add(key);
+					out.push({ q, name, addr, type });
+				}
+				return out;
+			}
+
+			function getCityFoodItems(city) {
+				const list = Array.isArray(FOOD_ITEMS_CACHE) ? FOOD_ITEMS_CACHE : [];
+				return list
+					.filter((it) => it.place === city)
+					.filter((it) => normalizeFoodTag(it.tagRaw).key === "food");
+			}
+
+			async function refreshMapLayers() {
+				ensureMapInstance();
+				if (!mapInstance || !mapDayLayer || !mapFoodLayer) return;
+				resizeMapShell();
+				updateMapToggleButton();
+
+				const day = getSelectedDayObj();
+				const city = day?.city || "京都";
+				const title = document.getElementById("mapTitle");
+				if (title) title.textContent = `🗺️ ${city}｜${day?.md || ""}`;
+
+				setMapLoading(true);
+				mapDayLayer.clearLayers();
+				mapFoodLayer.clearLayers();
+
+				const bounds = L.latLngBounds();
+				let points = 0;
+				let foodPoints = 0;
+				let hasBounds = false;
+
+				// Day points
+				const dayQueries = getDayLocationQueries(day);
+				for (const row of dayQueries) {
+					const hit = await geocodeOne(row.q);
+					if (!hit) continue;
+					const dot = L.circleMarker([hit.lat, hit.lng], {
+						radius: 7,
+						color: "rgba(47, 79, 79, 0.95)",
+						weight: 2,
+						fillColor: "rgba(47, 79, 79, 0.35)",
+						fillOpacity: 0.9,
+					});
+					const link = mapUrl(row.name, row.addr);
+					dot.bindPopup(
+						`<div style="font-weight:900;margin-bottom:6px;">${escapeHtml(row.name || row.addr || row.q)}</div>` +
+							(row.addr ? `<div style="font-size:12px;opacity:.75;">${escapeHtml(row.addr)}</div>` : "") +
+							`<div style="margin-top:10px;"><a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">🧭 導航</a></div>`
+					);
+					dot.addTo(mapDayLayer);
+					bounds.extend([hit.lat, hit.lng]);
+					hasBounds = true;
+					points++;
+				}
+
+				// City food overlay
+				if (mapShowCityFood) {
+					const foods = getCityFoodItems(city);
+					for (const it of foods) {
+						const q = `${it.title || ""} ${city}`.trim();
+						const hit = await geocodeOne(q);
+						if (!hit) continue;
+						const dot = L.circleMarker([hit.lat, hit.lng], {
+							radius: 7,
+							color: "rgba(255, 107, 107, 0.95)",
+							weight: 2,
+							fillColor: "rgba(255, 107, 107, 0.35)",
+							fillOpacity: 0.9,
+						});
+						const link = it.url || mapUrl(it.title, city);
+						dot.bindPopup(
+							`<div style="font-weight:950;margin-bottom:6px;">🍴 ${escapeHtml(it.title || "餐廳")}</div>` +
+								(it.note ? `<div style="font-size:12px;opacity:.78;">${escapeHtml(it.note)}</div>` : "") +
+								`<div style="margin-top:10px;"><a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">🧭 打開地圖</a></div>`
+						);
+						dot.addTo(mapFoodLayer);
+						bounds.extend([hit.lat, hit.lng]);
+						hasBounds = true;
+						foodPoints++;
+					}
+				}
+
+				// Counts
+				const counts = document.getElementById("mapCounts");
+				if (counts) {
+					const base = `當天 ${points} 點`;
+					const plus = mapShowCityFood ? `｜餐廳 ${foodPoints} 間` : "";
+					counts.textContent = base + plus;
+				}
+
+				// Fit bounds (prefer POIs; else fallback center)
+				if (hasBounds) {
+					mapInstance.fitBounds(bounds, { padding: [40, 40] });
+				} else {
+					const center = CITY_CENTER[city] || CITY_CENTER["京都"];
+					mapInstance.setView(center, 13);
+				}
+				points = points;
+				setMapLoading(false);
+			}
+
+			function queueMapRefresh() {
+				if (mapRefreshTimer) window.clearTimeout(mapRefreshTimer);
+				mapRefreshTimer = window.setTimeout(() => {
+					if (CURRENT_PAGE === "map") refreshMapLayers();
+				}, 80);
 			}
 
 			function renderDaily(days, selectedMd) {
@@ -2132,15 +2669,28 @@ Sukiyaki Kimura,很道地的DIY壽喜燒,https://www.google.com/maps/place/Sukiy
 			}
 
 			function setPage(page) {
+				CURRENT_PAGE = page;
 				const isDaily = page === "daily";
+				const isMap = page === "map";
 				const isFood = page === "food";
 				const isTools = page === "tools";
 				document.getElementById("page-daily").setAttribute("aria-hidden", isDaily ? "false" : "true");
+				document.getElementById("page-map").setAttribute("aria-hidden", isMap ? "false" : "true");
 				document.getElementById("page-food").setAttribute("aria-hidden", isFood ? "false" : "true");
 				document.getElementById("page-tools").setAttribute("aria-hidden", isTools ? "false" : "true");
 				document.getElementById("tab-daily").setAttribute("aria-selected", isDaily ? "true" : "false");
+				document.getElementById("tab-map").setAttribute("aria-selected", isMap ? "true" : "false");
 				document.getElementById("tab-food").setAttribute("aria-selected", isFood ? "true" : "false");
 				document.getElementById("tab-tools").setAttribute("aria-selected", isTools ? "true" : "false");
+
+				if (isMap) {
+					startUserLocationWatch();
+					queueMapRefresh();
+					resizeMapShell();
+					setTimeout(() => mapInstance?.invalidateSize?.(), 120);
+				} else {
+					stopUserLocationWatch();
+				}
 			}
 
 			function init() {
@@ -2173,12 +2723,27 @@ Sukiyaki Kimura,很道地的DIY壽喜燒,https://www.google.com/maps/place/Sukiy
 				renderTools(ledgerRows);
 
 				document.getElementById("tab-daily").addEventListener("click", () => setPage("daily"));
+				document.getElementById("tab-map").addEventListener("click", () => setPage("map"));
 				document.getElementById("tab-food").addEventListener("click", () => setPage("food"));
 				document.getElementById("tab-tools").addEventListener("click", () => setPage("tools"));
+
+				// Map controls
+				updateMapToggleButton();
+				document.getElementById("mapRefresh")?.addEventListener("click", () => refreshMapLayers());
+				document.getElementById("mapLocate")?.addEventListener("click", () => centerOnUser());
+				document.getElementById("mapToggleFood")?.addEventListener("click", () => {
+					mapShowCityFood = !mapShowCityFood;
+					localStorage.setItem(MAP_SHOW_CITY_FOOD_KEY, mapShowCityFood ? "1" : "0");
+					refreshMapLayers();
+				});
+				window.addEventListener("resize", () => {
+					if (CURRENT_PAGE === "map") resizeMapShell();
+				});
 			}
 
 			init();
 		</script>
 	</body>
 </html>
-
+kyoto.html
+目前顯示的是「kyoto.html」。 
